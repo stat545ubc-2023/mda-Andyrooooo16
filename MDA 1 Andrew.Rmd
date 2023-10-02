@@ -108,9 +108,76 @@ My fourth choice is the steam_games data set because I want to learn more about 
 
 <!-------------------------- Start your work below ---------------------------->
 
+Code Chunk for "vancouver_trees" data set
+
 ```{r}
 ### EXPLORE HERE ###
-steam_games
+
+#column_names <- colnames(vancouver_trees)
+
+#print(column_names)
+
+#vancouver_trees
+
+vancouver_trees %>% group_by(species_name) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+
+```
+
+Code Chunk for "cancer_sample" data set
+
+```{r}
+  
+
+largeradius_data <- filter(cancer_sample, radius_mean >= 25)
+
+print(largeradius_data)
+
+
+distinctradius_rows <- cancer_sample %>%
+  distinct(radius_worst)
+
+
+print(distinctradius_rows)
+
+cancer_sample1 <- cancer_sample %>%
+  rename(worst_radius = radius_worst)
+
+```
+
+Code Chunk for "parking_meters" data set
+
+```{r}
+print (parking_meters)
+
+parking_meters %>% select()
+
+new_data <- data.frame(
+  meter_head = c("Single", "Twin"))
+print(new_data)
+
+glimpse(parking_meters)
+
+
+```
+
+Code Chunk for "steam_games" data set
+
+```{r}
+  
+link_to_games <- steam_games %>% pull(url)
+
+print(link_to_games)
+
+
+tally_games <- steam_games %>% tally()
+print(tally_games)
+
+sliced_rows <- slice(steam_games, 1:5)
+print(sliced_rows)
+
+
 
 
 
