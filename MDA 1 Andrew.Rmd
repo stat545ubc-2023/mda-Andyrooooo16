@@ -19,6 +19,7 @@ And hopefully the first of many. Let's get started:
 ```{r}
 library(datateachr)
 library(tidyverse)
+library(ggplot2)
 ```
 
 3.  Make a repository in the <https://github.com/stat545ubc-2023> Organization. You can do this by following the steps found on canvas in the entry called [MDA: Create a repository](https://canvas.ubc.ca/courses/126199/pages/mda-create-a-repository). One completed, your repository should automatically be listed as part of the stat545ubc-2023 Organization.
@@ -84,21 +85,22 @@ And that is exactly the first thing that you will do!
 
 <!-------------------------- Start your work below ---------------------------->
 
-1: CHOICE_1\_HERE\
 
-My first choice is the vancouver_trees data set because I am curious about the species native to this city.
+### First Choice
 
-2: CHOICE_2\_HERE\
+**My first choice is the vancouver_trees data set because I am curious about the species native to this city.**
 
-My second choice is the cancer_sample data set because I want to leverage my lifescience background to make sense of the data.
+### Second Choice
 
-3: CHOICE_3\_HERE\
+**My second choice is the cancer_sample data set because I want to leverage my lifescience background to make sense of the data.**
 
-My third choice is the parking_meters data set because with the recent installation of new meters in my neighborhood, I want to see if there is an increase in revenue for the government.
+### Third Choice
 
-4: CHOICE_4\_HERE
+**My third choice is the parking_meters data set because with the recent installation of new meters in my neighborhood, I want to see if there is an increase in revenue for the government.**
 
-My fourth choice is the steam_games data set because I want to learn more about the category of videogames that perform well in the most current 5 years. 
+### Fourth Choice
+
+**My fourth choice is the steam_games data set because I want to learn more about the category of videogames that perform well in the most current 5 years.**
 
 <!----------------------------------------------------------------------------->
 
@@ -108,9 +110,89 @@ My fourth choice is the steam_games data set because I want to learn more about 
 
 <!-------------------------- Start your work below ---------------------------->
 
+### Code Chunk for "vancouver_trees" data set
+
+**I will use "glimpse", "summarize", "group_by" and "arrange"**
+
 ```{r}
 ### EXPLORE HERE ###
-steam_games
+
+#column_names <- colnames(vancouver_trees)
+
+#print(column_names)
+
+vancouver_trees
+
+glimpse(vancouver_trees)
+
+vancouver_trees %>% group_by(species_name) %>%
+  summarize(count = n()) %>%
+  arrange(desc(count))
+
+```
+
+### Code Chunk for "cancer_sample" data set
+
+**I will use "filter", "distinct",  and "rename"**
+
+
+```{r}
+  
+
+largeradius_data <- filter(cancer_sample, radius_mean >= 25)
+
+print(largeradius_data)
+
+
+distinctradius_rows <- cancer_sample %>%
+  distinct(radius_worst)
+
+
+print(distinctradius_rows)
+
+cancer_sample1 <- cancer_sample %>%
+  rename(worst_radius = radius_worst)
+
+```
+
+### Code Chunk for "parking_meters" data set
+
+**I will use "glimpse", "select",  and "mutate"**
+
+```{r}
+parking_meters %>% select(r_mf_9a_6p)
+
+new_data <- data.frame(
+  meter_head = c("Single", "Twin"))
+
+print(new_data)
+
+glimpse(parking_meters)
+
+parking_meters <- parking_meters %>%
+  mutate(double_meter_head = paste(meter_head, meter_head, sep = "-"))
+
+
+```
+
+### Code Chunk for "steam_games" data set
+
+**I will use "pull", "tally",  and "slice"**
+
+```{r}
+  
+link_to_games <- steam_games %>% pull(url)
+
+print(head(link_to_games, 20))
+
+
+tally_games <- steam_games %>% tally()
+print(tally_games)
+
+sliced_rows <- slice(steam_games, 1:5)
+print(sliced_rows)
+
+
 
 
 
@@ -122,11 +204,22 @@ steam_games
 
 <!-------------------------- Start your work below ---------------------------->
 
+### Selection: vancouver_trees dataset
+
+**I have a personal interest in woodworking and BC wildlife so I am curious about the local species of trees in Vancouver.Conducting analysis on this set could inform me about relative tree abundance as well as give me insight on which species dominate which neighborhoods. This is why I will be selecting the "vancouver_trees" data set.**
+
+
+
 <!----------------------------------------------------------------------------->
 
 1.4 **(2 points)** Time for a  final decision! Going back to the beginning, it's important to have an *end goal* in mind. For example, if I had chosen the `titanic` dataset for my project, I might've wanted to explore the relationship between survival and other variables. Try to think of 1 research question that you would want to answer with your dataset. Note it down below.
 
 <!-------------------------- Start your work below ---------------------------->
+
+### End Goal: Explore "Spectable" Trees
+
+**I would like to explore the relationship between tree species and neighborhoods. I hope to use this analysis to inform myself on the best spots to see fall leaves and cherry blossoms during the fall and spring respectively. Ultimately I am also hoping to explore relationships between tree planting density in the city based on planted tree species.**
+
 
 <!----------------------------------------------------------------------------->
 
@@ -157,6 +250,102 @@ Make sure that you're using dplyr and ggplot2 rather than base R for this task. 
 
 <!-------------------------- Start your work below ---------------------------->
 
+
+### 1. Plot the distribution of a numeric variable
+
+**Explanation: I chose to first visualize the amount of trees in each neighborhood. I thought this would allow me a good high level understanding of the tree distribution in Vancouver that can further inform me about specific neighbourhoods I may want to explore.**
+
+```{r}
+
+neighbourhood_tree_counts <- vancouver_trees %>% 
+  group_by(neighbourhood_name) %>%
+  summarize(Total_Trees = n()) # this counts amount of trees in each neighbourhood
+
+bar_plot <- ggplot(neighbourhood_tree_counts, aes(x = neighbourhood_name, y = Total_Trees)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  labs(title = "Number of Trees in Vancouver Neighbourhoods",
+       x = "Neighbourhood",
+       y = "Total Trees") +
+  coord_flip() +
+  theme_minimal() # this bar chart visualizes the amount of trees in each neighbourhood.
+
+print(bar_plot)
+
+
+```
+
+### 2.  Create a new variable based on other variables in your data (only if it makes sense)
+
+**I wanted to create a new version of the vancouver_trees dataset that contains the age of the trees. I hope to use this field to analyze themes of government planting over the years. Did they decide to plant Maple trees all during the same couple of years? Or did they spread the species planting across multiple decades? In order to get this new column, I extracted the year value from the date_planted column, and then did some substraction with our current year to find the age of the tree. This is then stored as the new dataset named vancouver_trees_age. **
+
+```{r}
+
+vancouver_trees$Year_Column <- format(vancouver_trees$date_planted, "%Y") #"%Y" extracts the year from the date
+
+
+# Determinining the age of a tree by taking its birth year and substracting it from 2023. 
+vancouver_trees_age <- vancouver_trees %>%
+  mutate(Year_Column = as.numeric(format(date_planted, "%Y")),
+         tree_age = 2023 - Year_Column) 
+
+print(vancouver_trees_age)
+
+ 
+
+
+```
+### 5. Filter observations in your data according to your own criteria. Think of what you'd like to explore - again, if this was the `titanic` dataset, I may want to narrow my search down to passengers born in a particular year...
+
+**Since I want to find out the best neighborhoods to see cherry blossoms during the spring and red maples during the fall, I want to filter the data to show how many cherry blossom trees there are in each neighborhood.**
+
+**Based on the data analysis below, it seems that Dunbar-Southlands and Hastings-Sunrise neighborhoods have the most Cherry Blossoms.**
+
+```{r}
+
+#In order to find all the trees of cherry origin, I first need to find the common genus name of all cherry trees
+
+result <- subset(vancouver_trees, grepl("CHERRY", common_name))
+
+print(result)
+
+```
+
+**From this table, it seems that "PRUNUS" & "CORNUS" are the genus names for all the cherry trees in vancouver.**
+
+
+```{r}
+#Now I can filter the dataset based on the names of these two genus' and then group the summed number of counts for each neighborhood. 
+
+cherry_trees_per_neighborhood <- vancouver_trees %>%
+  filter(genus_name == "PRUNUS" | genus_name == "CORNUS") %>%
+  group_by(neighbourhood_name) %>%     
+  summarize(cherry_count = n())    
+
+print(cherry_trees_per_neighborhood)
+
+```
+
+### 8.Use a density plot to explore any of your variables (that are suitable for this type of plot).
+
+**I decided to use a scatter density plot to determine the relative abundance of trees in Vancouver based on geographical location (longitutde and latitude).**
+
+```{r}
+library(ggplot2)
+
+ggplot(vancouver_trees, aes(x = longitude, y = latitude)) +
+  geom_point(alpha = 0.8) +
+  stat_density_2d(aes(fill = stat(density)), geom = "tile", contour = FALSE, alpha = 0.8) +
+  scale_fill_gradient(low = "white", high = "darkgreen") +
+  labs(
+    title = "Density Scatterplot of Trees in Vancouver",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme_minimal()
+```
+
+
+
 <!----------------------------------------------------------------------------->
 
 # Task 3: Choose research questions 
@@ -164,6 +353,17 @@ Make sure that you're using dplyr and ggplot2 rather than base R for this task. 
 **(4 points)** So far, you have chosen a dataset and gotten familiar with it through exploring the data. You have also brainstormed one research question that interested you (Task 1.4).  Now it's time to pick 4 research questions that you would like to explore in Milestone 2! Write the 4 questions and any additional comments below. 
 
 <!--- *****START HERE***** --->
+
+### **After exploring the vancouver_trees data set with various manipulation techniques and graphing, I am hoping to pick the following 4 research questions:**
+
+**1. What is the relationship between density of trees in a neighbourhood and the age of the trees planted?**
+
+**2. What is the relationship between the distribution of different species of "Spectacle" trees throughout Vancouver? ("Spectacle" trees is an subjective term that will be defined as species of that people visit as an attraction)**
+
+**3. Which streets in Vancouver have the most amount of trees with the largest plant area? Is there a relationship between plant area and how old a tree is?**
+
+**4. What is the relationship between species diversity and longitude/latitude? Is there a specific species that dominates a certain area of vancouver or is the distrubition fairly equal? **
+
 
 <!----------------------------->
 
