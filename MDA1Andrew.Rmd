@@ -1,6 +1,6 @@
 ---
 title: "Mini Data-Analysis Deliverable 1"
-output: html_document
+output: md_document
 ---
 
 # Welcome to your (maybe) first-ever data analysis project!
@@ -110,13 +110,10 @@ And that is exactly the first thing that you will do!
 
 <!-------------------------- Start your work below ---------------------------->
 
-<<<<<<< HEAD
 ### Code Chunk for "vancouver_trees" data set
 
 **I will use "glimpse", "summarize", "group_by" and "arrange"**
-=======
-Code Chunk for "vancouver_trees" data set
->>>>>>> 44e6fb06e35b945534c735a714689d6808021ad2
+
 
 ```{r}
 ### EXPLORE HERE ###
@@ -125,31 +122,18 @@ Code Chunk for "vancouver_trees" data set
 
 #print(column_names)
 
-<<<<<<< HEAD
 vancouver_trees
 
 glimpse(vancouver_trees)
 
 vancouver_trees %>% group_by(species_name) %>%
-  summarize(count = n()) %>%
-=======
-#vancouver_trees
-
-vancouver_trees %>% group_by(species_name) %>%
   summarise(count = n()) %>%
->>>>>>> 44e6fb06e35b945534c735a714689d6808021ad2
   arrange(desc(count))
-
 ```
 
-<<<<<<< HEAD
 ### Code Chunk for "cancer_sample" data set
 
 **I will use "filter", "distinct",  and "rename"**
-
-=======
-Code Chunk for "cancer_sample" data set
->>>>>>> 44e6fb06e35b945534c735a714689d6808021ad2
 
 ```{r}
   
@@ -170,7 +154,7 @@ cancer_sample1 <- cancer_sample %>%
 
 ```
 
-<<<<<<< HEAD
+
 ### Code Chunk for "parking_meters" data set
 
 **I will use "glimpse", "select",  and "mutate"**
@@ -181,24 +165,13 @@ parking_meters %>% select(r_mf_9a_6p)
 new_data <- data.frame(
   meter_head = c("Single", "Twin"))
 
-=======
-Code Chunk for "parking_meters" data set
-
-```{r}
-print (parking_meters)
-
-parking_meters %>% select()
-
-new_data <- data.frame(
-  meter_head = c("Single", "Twin"))
->>>>>>> 44e6fb06e35b945534c735a714689d6808021ad2
 print(new_data)
 
 glimpse(parking_meters)
 
-<<<<<<< HEAD
 parking_meters <- parking_meters %>%
   mutate(double_meter_head = paste(meter_head, meter_head, sep = "-"))
+
 
 
 ```
@@ -206,29 +179,19 @@ parking_meters <- parking_meters %>%
 ### Code Chunk for "steam_games" data set
 
 **I will use "pull", "tally",  and "slice"**
-=======
-
-```
-
-Code Chunk for "steam_games" data set
->>>>>>> 44e6fb06e35b945534c735a714689d6808021ad2
 
 ```{r}
   
 link_to_games <- steam_games %>% pull(url)
 
-<<<<<<< HEAD
 print(head(link_to_games, 20))
-=======
-print(link_to_games)
->>>>>>> 44e6fb06e35b945534c735a714689d6808021ad2
-
 
 tally_games <- steam_games %>% tally()
 print(tally_games)
 
 sliced_rows <- slice(steam_games, 1:5)
 print(sliced_rows)
+
 
 
 
@@ -328,9 +291,6 @@ vancouver_trees_age <- vancouver_trees %>%
 
 print(vancouver_trees_age)
 
- 
-
-
 ```
 ### 5. Filter observations in your data according to your own criteria. Think of what you'd like to explore - again, if this was the `titanic` dataset, I may want to narrow my search down to passengers born in a particular year...
 
@@ -380,6 +340,7 @@ ggplot(vancouver_trees, aes(x = longitude, y = latitude)) +
     y = "Latitude"
   ) +
   theme_minimal()
+
 ```
 
 
