@@ -10,6 +10,7 @@ File Name | Purpose
 README.md | A markdown file that provides an overview of the project, as well as the files within the associated GitHub repository
 MDA1Andrew.md | A markdown file that contains a finished MDA exercise for marking. 
 MDA1Andrew.rmd | R markdown file that contains all other code.
+MDA1Andrew_files | Contains Figures for markdown file. 
 
 
 
