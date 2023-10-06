@@ -8,7 +8,9 @@ The aim is to familiarize the student with interpreting data using dplyr and ggp
 File Name | Purpose
 ----------|---------
 README.md | A markdown file that provides an overview of the project, as well as the files within the associated GitHub repository
-MDA 1 Andrew.md | A markdown file that contains a finished MDA exercise. 
+MDA1Andrew.md | A markdown file that contains a finished MDA exercise for marking. 
+MDA1Andrew.rmd | R markdown file that contains all other code.
+
 
 
 ## How can I run code that appears in this folder/GitHub repository?
