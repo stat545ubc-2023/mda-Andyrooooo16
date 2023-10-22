@@ -42,8 +42,11 @@ By the end of this milestone, you should:
 
 Begin by loading your data and the tidyverse package below:
 
+<<<<<<< HEAD
 #Andrew Test
 
+=======
+>>>>>>> 9c5f7b898f7c2e6a4115ab037fef9b08c03b4a97
 ```{r, message = FALSE}
 library(datateachr) # <- might contain the data you picked!
 library(tidyverse)
