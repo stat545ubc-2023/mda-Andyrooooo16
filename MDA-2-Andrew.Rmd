@@ -43,13 +43,13 @@ By the end of this milestone, you should:
 Begin by loading your data and the tidyverse package below:
 
 <<<<<<< HEAD
-#Andrew Test
-#Andrew Test 2
 
 =======
 >>>>>>> 9c5f7b898f7c2e6a4115ab037fef9b08c03b4a97
 ```{r, message = FALSE}
 library(datateachr) # <- might contain the data you picked!
+library(dplyr)
+library(ggplot2)
 library(tidyverse)
 ```
 
@@ -62,10 +62,13 @@ From milestone 1, you should have an idea of the basic structure of your dataset
 First, write out the 4 research questions you defined in milestone 1 were. This will guide your work through milestone 2:
 
 <!-------------------------- Start your work below ---------------------------->
-1. *FILL_THIS_IN*
-2. *FILL_THIS_IN*
-3. *FILL_THIS_IN*
-4. *FILL_THIS_IN*
+*1. What is the relationship between the age of the tree and the neighborhood it was planted in??* (This question use to be "What is the relationship between density of trees in a neighbourhood and the age of the trees planted?", however, upon further consideration, I did not believe there would be tangible correlation between density of tree clusters and age.Instead I wish to explore how many trees there are in a neighborhood in relationship to age of trees planted to explore planting trends.)
+
+*2. What is the relationship between the distribution of different species of “Spectacle” trees throughout Vancouver? (“Spectacle” trees is an subjective term that will be defined as species of that people visit as an attraction)*
+
+*3. Which streets in Vancouver have the most amount of trees with the largest plant area? Is there a relationship between plant area and how old a tree is?*
+
+*4. What is the relationship between species diversity and longitude/latitude? Is there a specific species that dominates a certain area of vancouver or is the distribution fairly equal?* 
 <!----------------------------------------------------------------------------->
 
 Here, we will investigate your data using various data manipulation and graphing functions.
@@ -98,6 +101,55 @@ Using variables and/or tables you made in one of the "Summarizing" tasks:
 Make sure it's clear what research question you are doing each operation for!
 
 <!------------------------- Start your work below ----------------------------->
+
+*What is the relationship between the age of the tree and the neighborhood it was planted in??*
+
+```{r}
+print(vancouver_trees_age)
+
+```
+
+
+1.  Compute the *range*, *mean*, and *two other summary statistics* of **one numerical variable** across the groups of **one categorical variable** from your data.
+
+```{r}
+library(dplyr)
+
+
+vancouver_trees_age %>%
+  filter(!is.na(tree_age)) %>%
+  summarize(
+    range_tree_age = max(tree_age) - min(tree_age),
+    average_tree_age = mean(tree_age), 
+    median_tree_age = median(tree_age), 
+    sd_tree_age = sd(tree_age)
+    )
+
+
+
+```
+7. Make a graph where it makes sense to customize the alpha transparency.
+```{r}
+
+library(ggplot2)
+
+
+# Create a heatmap
+heatmap_plot <- ggplot(vancouver_trees_age, aes(x = neighbourhood_name, y = tree_age)) +
+  geom_tile(aes(fill = tree_age, alpha = 0.7)) + 
+  scale_fill_gradient(low = "blue", high = "red") +
+  labs(x = "Neighborhood", y = "Tree Age") +
+  ggtitle("Heatmap with Alpha Transparency: Relationship between Neighborhood and Tree Age") +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+# Print the heatmap
+print(heatmap_plot)
+
+```
+
+
+
 
 <!----------------------------------------------------------------------------->
 
