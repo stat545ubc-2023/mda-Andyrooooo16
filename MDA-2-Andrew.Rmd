@@ -62,7 +62,7 @@ From milestone 1, you should have an idea of the basic structure of your dataset
 First, write out the 4 research questions you defined in milestone 1 were. This will guide your work through milestone 2:
 
 <!-------------------------- Start your work below ---------------------------->
-*1. What is the relationship between the age of the tree and the neighborhood it was planted in??* (This question use to be "What is the relationship between density of trees in a neighbourhood and the age of the trees planted?", however, upon further consideration, I did not believe there would be tangible correlation between density of tree clusters and age.Instead I wish to explore how many trees there are in a neighborhood in relationship to age of trees planted to explore planting trends.)
+*1. What is the relationship between the age of the tree and the tree diameter?* (This question use to be "What is the relationship between density of trees in a neighbourhood and the age of the trees planted?", however, upon further consideration, I did not believe there would be tangible correlation between density of tree clusters and age. Instead I wish to explore growth trends of trees based on species by first determining average diameter based on age.)
 
 *2. What is the relationship between the distribution of different species of “Spectacle” trees throughout Vancouver? (“Spectacle” trees is an subjective term that will be defined as species of that people visit as an attraction)*
 
@@ -102,14 +102,20 @@ Make sure it's clear what research question you are doing each operation for!
 
 <!------------------------- Start your work below ----------------------------->
 
-*What is the relationship between the age of the tree and the neighborhood it was planted in??*
+*What is the relationship between the age of the tree and the tree diameter?*
 
 ```{r}
 library(datateachr)
 
+# I am redefining my custom data set here because I had issues linking my first MDA file data set to this one. I hope this is okay :( 
 
+vancouver_trees$Year_Column <- format(vancouver_trees$date_planted, "%Y") 
 
-print(vancouver_trees)
+vancouver_trees_age <- vancouver_trees %>%
+  mutate(Year_Column = as.numeric(format(date_planted, "%Y")),
+         tree_age = 2023 - Year_Column) 
+
+print(vancouver_trees_age)
 
 ```
 
@@ -137,18 +143,10 @@ vancouver_trees_age%>%
 
 library(ggplot2)
 
-
-# Create a heatmap
-heatmap_plot <- ggplot(vancouver_trees_age, aes(x = neighbourhood_name, y = tree_age)) +
-  geom_tile(aes(fill = tree_age, alpha = 0.7)) + 
-  scale_fill_gradient(low = "blue", high = "red") +
-  labs(x = "Neighborhood", y = "Tree Age") +
-  ggtitle("Heatmap with Alpha Transparency: Relationship between Neighborhood and Tree Age") +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
-
-# Print the heatmap
-print(heatmap_plot)
+ggplot(data = vancouver_trees_age, aes(x = tree_age , y = diameter)) +
+  geom_point(aes(color = "Green"), alpha = 0.6, size = 3) +  # Add points for the scatter plot
+  labs(x = "Tree Age", y = "Tree Diameter") +  # Labels for the axes
+  ggtitle("Tree Age vs. Tree Diameter Scatter Plot")  # Title for the plot
 
 ```
 
