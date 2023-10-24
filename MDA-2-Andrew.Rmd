@@ -138,20 +138,75 @@ vancouver_trees_age%>%
 
 
 ```
-7. Make a graph where it makes sense to customize the alpha transparency.
+6. Create a graph of your choosing, make one of the axes logarithmic, and format the axes labels so that they are "pretty" or easier to read.
 ```{r}
 
 library(ggplot2)
 
 ggplot(data = vancouver_trees_age, aes(x = tree_age , y = diameter)) +
-  geom_point(aes(color = "Green"), alpha = 0.6, size = 3) +  # Add points for the scatter plot
-  labs(x = "Tree Age", y = "Tree Diameter") +  # Labels for the axes
+  geom_point(aes(color = "Darkgreen"), alpha = 0.1, size = 3) +
+  scale_color_manual(values = "darkgreen") + # Add points for the scatter plot
+  labs(x = "Tree Age", y = "Tree Diameter") +
+  scale_y_log10() + # Labels for the axes
   ggtitle("Tree Age vs. Tree Diameter Scatter Plot")  # Title for the plot
 
 ```
 
+*What is the relationship between the distribution of different species of “Spectacle” trees throughout Vancouver? (“Spectacle” trees is an subjective term that will be defined as species of that people visit as an attraction)*
 
 
+2.  Compute the number of observations for at least one of your categorical variables. Do not use the function `table()`!
+
+```{r}
+
+species_count <- vancouver_trees_age %>%
+  group_by(species_name) %>%
+  summarise(Count = n())
+
+# Print the result
+print(species_count)
+
+```
+7. Make a graph where it makes sense to customize the alpha transparency.
+
+```{r}
+library(ggplot2)
+
+filtered_data <- vancouver_trees_age %>%
+  filter(genus_name %in% c("PRUNUS", "CORNUS", "ACER", "ABIES")) %>%
+  na.omit()
+
+ggplot(filtered_data, aes(x = longitude, y = latitude, fill = genus_name)) +
+  geom_point(alpha = 1.0, shape = 21) +
+  stat_density_2d(geom = "tile", contour = TRUE, alpha = 0.2) +
+  scale_fill_manual(values = c("PRUNUS" = "pink", "CORNUS" = "hotpink", "ACER" = "orange", "ABIES" = "yellow")) +
+  labs(
+    title = "Distribution of Cherry Blossoms and Maple Trees in Vancouver",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme_minimal()
+```
+
+Supplementary calculation to find Maple genus. We find that "ACER" and "ABIES" are out two genus' of interest. 
+
+```{r}
+search_string <- 'maple'
+
+matching_rows <- grep(search_string, vancouver_trees_age$common_name, ignore.case = TRUE)
+
+unique_values <- unique(vancouver_trees_age$common_name[matching_rows])
+
+associated_values_list <- list()
+
+for (val in unique_values) {
+  associated_values_list[[val]] <- unique(vancouver_trees_age$genus_name[matching_rows[vancouver_trees_age$common_name[matching_rows] == val]])
+}
+
+result_trees <- data.frame(common_name = names(associated_values_list), genus_name = unlist(associated_values_list))
+
+print(result_trees)
+```
 
 <!----------------------------------------------------------------------------->
 

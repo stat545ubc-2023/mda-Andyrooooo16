@@ -223,6 +223,59 @@ diameter?*
     ##            <dbl>            <dbl>           <dbl>       <dbl>
     ## 1             30             19.1              19        7.44
 
+1.  Create a graph of your choosing, make one of the axes logarithmic,
+    and format the axes labels so that they are “pretty” or easier to
+    read.
+
+<!-- -->
+
+    library(ggplot2)
+
+    ggplot(data = vancouver_trees_age, aes(x = tree_age , y = diameter)) +
+      geom_point(aes(color = "Darkgreen"), alpha = 0.1, size = 3) +
+      scale_color_manual(values = "darkgreen") + # Add points for the scatter plot
+      labs(x = "Tree Age", y = "Tree Diameter") +
+      scale_y_log10() + # Labels for the axes
+      ggtitle("Tree Age vs. Tree Diameter Scatter Plot")  # Title for the plot
+
+    ## Warning: Transformation introduced infinite values in continuous y-axis
+
+    ## Warning: Removed 76548 rows containing missing values (`geom_point()`).
+
+![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+
+*What is the relationship between the distribution of different species
+of “Spectacle” trees throughout Vancouver? (“Spectacle” trees is an
+subjective term that will be defined as species of that people visit as
+an attraction)*
+
+1.  Compute the number of observations for at least one of your
+    categorical variables. Do not use the function `table()`!
+
+<!-- -->
+
+    species_count <- vancouver_trees_age %>%
+      group_by(species_name) %>%
+      summarise(Count = n())
+
+    # Print the result
+    print(species_count)
+
+    ## # A tibble: 283 × 2
+    ##    species_name   Count
+    ##    <chr>          <int>
+    ##  1 ABIES            139
+    ##  2 ACERIFOLIA   X  1724
+    ##  3 ACUMINATA          7
+    ##  4 ACUTISSIMA       526
+    ##  5 AILANTHIFOLIA      5
+    ##  6 ALBA              26
+    ##  7 ALBA-SINENSIS      3
+    ##  8 ALNIFOLIA        274
+    ##  9 ALPINUM            1
+    ## 10 ALTISSIMA          4
+    ## # ℹ 273 more rows
+
 1.  Make a graph where it makes sense to customize the alpha
     transparency.
 
@@ -230,14 +283,138 @@ diameter?*
 
     library(ggplot2)
 
-    ggplot(data = vancouver_trees_age, aes(x = tree_age , y = diameter)) +
-      geom_point(aes(color = "Green"), alpha = 0.6, size = 3) +  # Add points for the scatter plot
-      labs(x = "Tree Age", y = "Tree Diameter") +  # Labels for the axes
-      ggtitle("Tree Age vs. Tree Diameter Scatter Plot")  # Title for the plot
+    filtered_data <- vancouver_trees_age %>%
+      filter(genus_name %in% c("PRUNUS", "CORNUS", "ACER", "ABIES")) %>%
+      na.omit()
 
-    ## Warning: Removed 76548 rows containing missing values (`geom_point()`).
+    ggplot(filtered_data, aes(x = longitude, y = latitude, fill = genus_name)) +
+      geom_point(alpha = 1.0, shape = 21) +
+      stat_density_2d(geom = "tile", contour = TRUE, alpha = 0.2) +
+      scale_fill_manual(values = c("PRUNUS" = "pink", "CORNUS" = "hotpink", "ACER" = "orange", "ABIES" = "yellow")) +
+      labs(
+        title = "Distribution of Cherry Blossoms and Maple Trees in Vancouver",
+        x = "Longitude",
+        y = "Latitude"
+      ) +
+      theme_minimal()
 
-![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+
+Supplementary calculation to find Maple genus. We find that “ACER” and
+“ABIES” are out two genus’ of interest.
+
+    search_string <- 'maple'
+
+    matching_rows <- grep(search_string, vancouver_trees_age$common_name, ignore.case = TRUE)
+
+    unique_values <- unique(vancouver_trees_age$common_name[matching_rows])
+
+    associated_values_list <- list()
+
+    for (val in unique_values) {
+      associated_values_list[[val]] <- unique(vancouver_trees_age$genus_name[matching_rows[vancouver_trees_age$common_name[matching_rows] == val]])
+    }
+
+    result_trees <- data.frame(common_name = names(associated_values_list), genus_name = unlist(associated_values_list))
+
+    print(result_trees)
+
+    ##                                                   common_name genus_name
+    ## HEDGE MAPLE                                       HEDGE MAPLE       ACER
+    ## COLUMNAR NORWAY MAPLE                   COLUMNAR NORWAY MAPLE       ACER
+    ## RED MAPLE                                           RED MAPLE       ACER
+    ## MAPLE SPECIES                                   MAPLE SPECIES       ACER
+    ## NORWAY MAPLE                                     NORWAY MAPLE       ACER
+    ## FREEMAN'S S.S. MAPLE                     FREEMAN'S S.S. MAPLE       ACER
+    ## KARPICK RED MAPLE                           KARPICK RED MAPLE       ACER
+    ## SILVER VARIEGATED NORWAY MAPLE SILVER VARIEGATED NORWAY MAPLE       ACER
+    ## NORWEGIAN SUNSET MAPLE                 NORWEGIAN SUNSET MAPLE       ACER
+    ## PAPERBARK MAPLE                               PAPERBARK MAPLE       ACER
+    ## GLOBEHEAD NORWAY MAPLE                 GLOBEHEAD NORWAY MAPLE       ACER
+    ## GREEN MOUNTAIN NORWAY MAPLE       GREEN MOUNTAIN NORWAY MAPLE       ACER
+    ## JAPANESE MAPLE                                 JAPANESE MAPLE       ACER
+    ## BOWHALL RED MAPLE                           BOWHALL RED MAPLE       ACER
+    ## BIGLEAF MAPLE                                   BIGLEAF MAPLE       ACER
+    ## DEBORAH NORWAY MAPLE                     DEBORAH NORWAY MAPLE       ACER
+    ## AUTUMN FLAME RED MAPLE                 AUTUMN FLAME RED MAPLE       ACER
+    ## HARVEST ORANGE JPN MAPLE             HARVEST ORANGE JPN MAPLE      ABIES
+    ## PACIFIC SUNSET MAPLE                     PACIFIC SUNSET MAPLE       ACER
+    ## AUTUMN BLAZE RED MAPLE                 AUTUMN BLAZE RED MAPLE       ACER
+    ## RED CAUCASIAN MAPLE                       RED CAUCASIAN MAPLE       ACER
+    ## SCHWEDLER NORWAY MAPLE                 SCHWEDLER NORWAY MAPLE       ACER
+    ## ARMSTRONG RED MAPLE                       ARMSTRONG RED MAPLE       ACER
+    ## OCTOBER GLORY RED MAPLE               OCTOBER GLORY RED MAPLE       ACER
+    ## OSAKAZUKI JAPANESE MAPLE             OSAKAZUKI JAPANESE MAPLE       ACER
+    ## DOUGLAS MAPLE                                   DOUGLAS MAPLE       ACER
+    ## SUPERFORM NORWAY MAPLE                 SUPERFORM NORWAY MAPLE       ACER
+    ## QUEEN ELIZABETH MAPLE                   QUEEN ELIZABETH MAPLE       ACER
+    ## GREEN COLUMN BLACK MAPLE             GREEN COLUMN BLACK MAPLE       ACER
+    ## CAUCASIAN MAPLE                               CAUCASIAN MAPLE       ACER
+    ## EMERALD QUEEN NORWAY MAPLE         EMERALD QUEEN NORWAY MAPLE       ACER
+    ## FAIRVIEW NORWAY MAPLE                   FAIRVIEW NORWAY MAPLE       ACER
+    ## CRIMSON KING NORWAY MAPLE           CRIMSON KING NORWAY MAPLE       ACER
+    ## PURPLE LEAF SYCAMORE MAPLE         PURPLE LEAF SYCAMORE MAPLE       ACER
+    ## PRINCETON GOLD MAPLE                     PRINCETON GOLD MAPLE       ACER
+    ## BRANDYWINE RED MAPLE                     BRANDYWINE RED MAPLE       ACER
+    ## SILVER MAPLE                                     SILVER MAPLE       ACER
+    ## SYCAMORE MAPLE                                 SYCAMORE MAPLE       ACER
+    ## VARIEGATED SYCAMORE MAPLE           VARIEGATED SYCAMORE MAPLE       ACER
+    ## RED SUNSET RED MAPLE                     RED SUNSET RED MAPLE       ACER
+    ## TATARIAN MAPLE                                 TATARIAN MAPLE       ACER
+    ## SNAKEBARK MAPLE                               SNAKEBARK MAPLE       ACER
+    ## AMUR MAPLE                                         AMUR MAPLE       ACER
+    ## RED JAPANESE MAPLE                         RED JAPANESE MAPLE       ACER
+    ## PURPLE NORWAY MAPLE                       PURPLE NORWAY MAPLE       ACER
+    ## CRIMSON SENTRY NORWAY MAPLE       CRIMSON SENTRY NORWAY MAPLE       ACER
+    ## ROYAL RED NORWAY MAPLE                 ROYAL RED NORWAY MAPLE       ACER
+    ## FULLMOON MAPLE                                 FULLMOON MAPLE       ACER
+    ## NORTHWOOD RED MAPLE                       NORTHWOOD RED MAPLE       ACER
+    ## MORGAN RED MAPLE                             MORGAN RED MAPLE       ACER
+    ## VINE MAPLE                                         VINE MAPLE       ACER
+    ## SUGAR MAPLE                                       SUGAR MAPLE       ACER
+    ## THREADLEAF JAPANESE MAPLE           THREADLEAF JAPANESE MAPLE       ACER
+    ## BURGANDY LACE JAPANESE  MAPLE   BURGANDY LACE JAPANESE  MAPLE       ACER
+    ## SHOJO JAPANESE MAPLE                     SHOJO JAPANESE MAPLE       ACER
+    ## EVELYN HEDGE MAPLE                         EVELYN HEDGE MAPLE       ACER
+    ## CONQUEST MAPLE                                 CONQUEST MAPLE       ACER
+    ## RED SHINE MAPLE                               RED SHINE MAPLE       ACER
+    ## KOTO NO IKO JAPANESE MAPLE         KOTO NO IKO JAPANESE MAPLE       ACER
+    ## BLOODGOOD JAPANESE MAPLE             BLOODGOOD JAPANESE MAPLE       ACER
+    ## PANACEK MAPLE                                   PANACEK MAPLE       ACER
+    ## KOREAN MAPLE                                     KOREAN MAPLE       ACER
+    ## POINTED LEAF MAPLE                         POINTED LEAF MAPLE       ACER
+    ## GOLDEN CAUCASIAN MAPLE                 GOLDEN CAUCASIAN MAPLE       ACER
+    ## TAIJA JAPANESE MAPLE                     TAIJA JAPANESE MAPLE       ACER
+    ## QUEEN ELIZABETH NORWAY MAPLE     QUEEN ELIZABETH NORWAY MAPLE       ACER
+    ## FAASSEN'S BLACK NORWAY MAPLE     FAASSEN'S BLACK NORWAY MAPLE       ACER
+    ## ELWOOD NORWAY MAPLE                       ELWOOD NORWAY MAPLE       ACER
+    ## GREENLACE NORWAY MAPLE                 GREENLACE NORWAY MAPLE       ACER
+    ## PERE DAVIDS MAPLE                           PERE DAVIDS MAPLE       ACER
+    ## CRIMSON SUNSET MAPLE                     CRIMSON SUNSET MAPLE       ACER
+    ## CUTLEAF SILVER MAPLE                     CUTLEAF SILVER MAPLE       ACER
+    ## BLACK MAPLE                                       BLACK MAPLE       ACER
+    ## HOT WINGS MAPLE                               HOT WINGS MAPLE       ACER
+    ## SILVER QUEEN MAPLE                         SILVER QUEEN MAPLE       ACER
+    ## IVY-LEAVED MAPLE                             IVY-LEAVED MAPLE       ACER
+    ## ALMIRA NORWAY MAPLE                       ALMIRA NORWAY MAPLE       ACER
+    ## SCARLET MAPLE FRANK JR                 SCARLET MAPLE FRANK JR       ACER
+    ## COLUMNAR RED MAPLE                         COLUMNAR RED MAPLE       ACER
+    ## WIER CUTLEAF SILVER MAPLE           WIER CUTLEAF SILVER MAPLE       ACER
+    ## STRIPED-BARK MAPLE                         STRIPED-BARK MAPLE       ACER
+    ## CRIMSON QUEEN JAPANESE MAPLE     CRIMSON QUEEN JAPANESE MAPLE       ACER
+    ## CELEBRATION RED MAPLE                   CELEBRATION RED MAPLE       ACER
+    ## GREENLACE JAPANESE MAPLE             GREENLACE JAPANESE MAPLE       ACER
+    ## HENRY MAPLE                                       HENRY MAPLE       ACER
+    ## SOUTHERN SUGAR MAPLE                     SOUTHERN SUGAR MAPLE       ACER
+    ## EASTERN MOUNTAIN MAPLE                 EASTERN MOUNTAIN MAPLE       ACER
+    ## PARKWAY MAPLE                                   PARKWAY MAPLE       ACER
+    ## RUGGED RIDGE MIYABE MAPLE           RUGGED RIDGE MIYABE MAPLE       ACER
+    ## CUTLEAF NORWAY MAPLE                     CUTLEAF NORWAY MAPLE       ACER
+    ## HARVEST ORANGE MAPLE                     HARVEST ORANGE MAPLE       ACER
+    ## CLEVELAND NORWAY MAPLE                 CLEVELAND NORWAY MAPLE       ACER
+    ## SHANTUNG MAPLE                                 SHANTUNG MAPLE       ACER
+    ## JADE GREEN NORWAY MAPLE               JADE GREEN NORWAY MAPLE       ACER
+    ## EASY STREET NORWAY MAPLE             EASY STREET NORWAY MAPLE       ACER
 
 <!----------------------------------------------------------------------------->
 
