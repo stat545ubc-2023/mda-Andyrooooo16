@@ -75,6 +75,11 @@ Begin by loading your data and the tidyverse package below:
     library(ggplot2)
     library(tidyverse)
 
+    library(datateachr) # <- might contain the data you picked!
+    library(dplyr)
+    library(ggplot2)
+    library(tidyverse)
+
 # Task 1: Process and summarize your data
 
 From milestone 1, you should have an idea of the basic structure of your
@@ -90,7 +95,7 @@ were. This will guide your work through milestone 2:
 <!-------------------------- Start your work below ---------------------------->
 
 *1. What is the relationship between the age of the tree and the tree
-diameter?* (This question use to be “What is the relationship between
+diameter?* (This question used to be “What is the relationship between
 density of trees in a neighbourhood and the age of the trees planted?”,
 however, upon further consideration, I did not believe there would be
 tangible correlation between density of tree clusters and age. Instead I
@@ -102,9 +107,13 @@ species of “Spectacle” trees throughout Vancouver? (“Spectacle” trees is
 an subjective term that will be defined as species of that people visit
 as an attraction)*
 
-*3. Which streets in Vancouver have the most amount of trees with the
-largest plant area? Is there a relationship between plant area and how
-old a tree is?*
+*3. Which neighbourhood in Vancouver contain the most amounts of
+“Spectacle trees”?* (This question used to be”Which streets in Vancouver
+have the most amount of trees with the largest plant area? Is there a
+relationship between plant area and how old a tree is?“, however, upon
+further evaluation I believe this question to be distracted in scope. I
+wanted to narrow down the question in pursuit of finding the best places
+in Vancouver to view”Spectacle trees” in fall and spring respectively.\*
 
 *4. What is the relationship between species diversity and
 longitude/latitude? Is there a specific species that dominates a certain
@@ -167,8 +176,6 @@ for!
 
 *What is the relationship between the age of the tree and the tree
 diameter?*
-
-    library(datateachr)
 
     # I am redefining my custom data set here because I had issues linking my first MDA file data set to this one. I hope this is okay :( 
 
@@ -242,7 +249,7 @@ diameter?*
 
     ## Warning: Removed 76548 rows containing missing values (`geom_point()`).
 
-![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
 *What is the relationship between the distribution of different species
 of “Spectacle” trees throughout Vancouver? (“Spectacle” trees is an
@@ -298,7 +305,7 @@ an attraction)*
       ) +
       theme_minimal()
 
-![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
 Supplementary calculation to find Maple genus. We find that “ACER” and
 “ABIES” are out two genus’ of interest.
@@ -415,6 +422,71 @@ Supplementary calculation to find Maple genus. We find that “ACER” and
     ## SHANTUNG MAPLE                                 SHANTUNG MAPLE       ACER
     ## JADE GREEN NORWAY MAPLE               JADE GREEN NORWAY MAPLE       ACER
     ## EASY STREET NORWAY MAPLE             EASY STREET NORWAY MAPLE       ACER
+
+*Which neighbourhood in Vancouver contain the most amounts of “Spectacle
+trees”?*
+
+1.  Compute the number of observations for at least one of your
+    categorical variables. Do not use the function `table()`!
+
+<!-- -->
+
+    library(dplyr)
+
+    spectacle_trees <- c("PRUNUS", "CORNUS", "ACER", "ABIES")
+
+    # Assuming 'vancouver_trees_age' is your dataset
+    tree_counts_by_genus_and_neighbourhood <- vancouver_trees_age %>%
+      filter(genus_name %in% spectacle_trees) %>%  # Filter by selected genera
+      group_by(neighbourhood_name, genus_name) %>%      # Group by street and genus
+      summarize(tree_count = n()) %>%            # Count the number of trees in each group
+      ungroup()
+
+    ## `summarise()` has grouped output by 'neighbourhood_name'. You can override
+    ## using the `.groups` argument.
+
+    print(tree_counts_by_genus_and_neighbourhood)
+
+    ## # A tibble: 88 × 3
+    ##    neighbourhood_name genus_name tree_count
+    ##    <chr>              <chr>           <int>
+    ##  1 ARBUTUS-RIDGE      ABIES              18
+    ##  2 ARBUTUS-RIDGE      ACER              867
+    ##  3 ARBUTUS-RIDGE      CORNUS             58
+    ##  4 ARBUTUS-RIDGE      PRUNUS           1514
+    ##  5 DOWNTOWN           ABIES               1
+    ##  6 DOWNTOWN           ACER             2043
+    ##  7 DOWNTOWN           CORNUS             15
+    ##  8 DOWNTOWN           PRUNUS            171
+    ##  9 DUNBAR-SOUTHLANDS  ABIES              10
+    ## 10 DUNBAR-SOUTHLANDS  ACER             2464
+    ## # ℹ 78 more rows
+
+1.  Create 3 histograms, with each histogram having different sized
+    bins. Pick the “best” one and explain why it is the best.
+
+<!-- -->
+
+    library(ggplot2)
+
+    #I live in "Sunset" Neighborhood so I am going to make a histogram to see how many Spectacle trees I have in my area. 
+
+
+    selected_neighborhood <- "SUNSET"  # Replace with the actual neighborhood name
+    selected_genus <- c("PRUNUS", "CORNUS", "ACER", "ABIES") # Replace with the actual genus names
+
+    # Filter the data for the selected neighborhood and genus
+    filtered_data <- vancouver_trees_age %>%
+      filter(neighbourhood_name == selected_neighborhood, genus_name %in% selected_genus)
+
+    # Create a histogram of the tree count for the selected genus in the selected neighborhood
+    histogram_tree_count <- ggplot(filtered_data, aes(x = genus_name)) +
+      geom_bar(fill = "blue", color = "black") +
+      labs(title = paste("Tree Count of", paste(selected_genus, collapse = "/"), "in", selected_neighborhood), x = "Genus")
+
+    print(histogram_tree_count)
+
+![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-10-1.png)
 
 <!----------------------------------------------------------------------------->
 
