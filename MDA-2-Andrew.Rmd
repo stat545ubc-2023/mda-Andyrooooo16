@@ -53,6 +53,15 @@ library(ggplot2)
 library(tidyverse)
 ```
 
+
+```{r}
+
+library(datateachr) # <- might contain the data you picked!
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+```
+
 # Task 1: Process and summarize your data 
 
 From milestone 1, you should have an idea of the basic structure of your dataset (e.g. number of rows and columns, class types, etc.). Here, we will start investigating your data more in-depth using various data manipulation functions. 
@@ -62,11 +71,12 @@ From milestone 1, you should have an idea of the basic structure of your dataset
 First, write out the 4 research questions you defined in milestone 1 were. This will guide your work through milestone 2:
 
 <!-------------------------- Start your work below ---------------------------->
-*1. What is the relationship between the age of the tree and the tree diameter?* (This question use to be "What is the relationship between density of trees in a neighbourhood and the age of the trees planted?", however, upon further consideration, I did not believe there would be tangible correlation between density of tree clusters and age. Instead I wish to explore growth trends of trees based on species by first determining average diameter based on age.)
+*1. What is the relationship between the age of the tree and the tree diameter?* (This question used to be "What is the relationship between density of trees in a neighbourhood and the age of the trees planted?", however, upon further consideration, I did not believe there would be tangible correlation between density of tree clusters and age. Instead I wish to explore growth trends of trees based on species by first determining average diameter based on age.)
 
 *2. What is the relationship between the distribution of different species of “Spectacle” trees throughout Vancouver? (“Spectacle” trees is an subjective term that will be defined as species of that people visit as an attraction)*
 
-*3. Which streets in Vancouver have the most amount of trees with the largest plant area? Is there a relationship between plant area and how old a tree is?*
+*3. Which neighbourhood in Vancouver contain the most amounts of "Spectacle trees"?*
+(This question used to be"Which streets in Vancouver have the most amount of trees with the largest plant area? Is there a relationship between plant area and how old a tree is?", however, upon further evaluation I believe this question to be distracted in scope. I wanted to narrow down the question in pursuit of finding the best places in Vancouver to view "Spectacle trees" in fall and spring respectively.*
 
 *4. What is the relationship between species diversity and longitude/latitude? Is there a specific species that dominates a certain area of vancouver or is the distribution fairly equal?* 
 <!----------------------------------------------------------------------------->
@@ -105,7 +115,6 @@ Make sure it's clear what research question you are doing each operation for!
 *What is the relationship between the age of the tree and the tree diameter?*
 
 ```{r}
-library(datateachr)
 
 # I am redefining my custom data set here because I had issues linking my first MDA file data set to this one. I hope this is okay :( 
 
@@ -207,6 +216,54 @@ result_trees <- data.frame(common_name = names(associated_values_list), genus_na
 
 print(result_trees)
 ```
+
+*Which neighbourhood in Vancouver contain the most amounts of "Spectacle trees"?*
+
+2.  Compute the number of observations for at least one of your categorical variables. Do not use the function `table()`!
+
+```{r}
+
+library(dplyr)
+
+spectacle_trees <- c("PRUNUS", "CORNUS", "ACER", "ABIES")
+
+# Assuming 'vancouver_trees_age' is your dataset
+tree_counts_by_genus_and_neighbourhood <- vancouver_trees_age %>%
+  filter(genus_name %in% spectacle_trees) %>%  # Filter by selected genera
+  group_by(neighbourhood_name, genus_name) %>%      # Group by street and genus
+  summarize(tree_count = n()) %>%            # Count the number of trees in each group
+  ungroup()
+
+print(tree_counts_by_genus_and_neighbourhood)
+```
+
+9. Create 3 histograms, with each histogram having different sized bins. Pick the "best" one and explain why it is the best.
+
+```{r}
+library(ggplot2)
+
+#I live in "Sunset" Neighborhood so I am going to make a histogram to see how many Spectacle trees I have in my area. 
+
+
+selected_neighborhood <- "SUNSET"  # Replace with the actual neighborhood name
+selected_genus <- c("PRUNUS", "CORNUS", "ACER", "ABIES") # Replace with the actual genus names
+
+# Filter the data for the selected neighborhood and genus
+filtered_data <- vancouver_trees_age %>%
+  filter(neighbourhood_name == selected_neighborhood, genus_name %in% selected_genus)
+
+# Create a histogram of the tree count for the selected genus in the selected neighborhood
+histogram_tree_count <- ggplot(filtered_data, aes(x = genus_name)) +
+  geom_bar(fill = "blue", color = "black") +
+  labs(title = paste("Tree Count of", paste(selected_genus, collapse = "/"), "in", selected_neighborhood), x = "Genus")
+
+print(histogram_tree_count)
+
+
+
+```
+
+
 
 <!----------------------------------------------------------------------------->
 
