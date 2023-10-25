@@ -8,9 +8,13 @@ The aim is to familiarize the student with interpreting data using dplyr and ggp
 File Name | Purpose
 ----------|---------
 README.md | A markdown file that provides an overview of the project, as well as the files within the associated GitHub repository
-MDA1Andrew.md | A markdown file that contains a finished MDA exercise for marking. 
+MDA1Andrew.md | A markdown file that contains the finished MDA1 exercise for marking
 MDA1Andrew.rmd | R markdown file that contains all other code.
-MDA1Andrew_files | Contains Figures for markdown file. 
+MDA1Andrew_files | Contains Figures for MDA1 markdown file. 
+MDA-2-Andrew.md | A markdown file that contains the finished MDA2 exercise for marking
+MDA-2-Andrew.rmd | R markdown file that contains all other code.
+MDA-2-Andrew_files | Contains Figures for MDA2 markdown file
+Output | Contains CSV and RDS file for MDA2
 
 
 
