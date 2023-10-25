@@ -83,6 +83,7 @@ Begin by loading your data and the tidyverse package below:
     library(dplyr)
     library(ggplot2)
     library(tidyverse)
+    library(broom)
 
 # Task 1: Process and summarize your data
 
@@ -98,33 +99,34 @@ were. This will guide your work through milestone 2:
 
 <!-------------------------- Start your work below ---------------------------->
 
-*1. What is the relationship between the age of the tree and plant
-area?* (This question used to be “What is the relationship between
+**1. What is the relationship between the age of the tree and plant
+area?** *(This question used to be “What is the relationship between
 density of trees in a neighbourhood and the age of the trees planted?”,
 however, upon further consideration, I did not believe there would be
 tangible correlation between density of tree clusters and age. Instead I
 wish to explore growth trends of trees based on species by first
-determining average diameter based on age.)
+determining average diameter based on age.)*
 
-*2. What is the distribution of different species of “Spectacle” trees
+**2. What is the distribution of different species of “Spectacle” trees
 throughout Vancouver? (“Spectacle” trees is an subjective term that will
-be defined as species of that people visit as an attraction)*
+be defined as species of that people visit as an attraction)**
 
-*3. Which neighbourhood in Vancouver contain the most amounts of
-“Spectacle trees”?* (This question used to be”Which streets in Vancouver
-have the most amount of trees with the largest plant area? Is there a
-relationship between plant area and how old a tree is?“, however, upon
-further evaluation I believe this question to be distracted in scope. I
-wanted to narrow down the question in pursuit of finding the best places
-in Vancouver to view”Spectacle trees” in fall and spring respectively.
+**3. Which neighbourhood in Vancouver contain the most amounts of
+“Spectacle trees”?** *(This question used to be”Which streets in
+Vancouver have the most amount of trees with the largest plant area? Is
+there a relationship between plant area and how old a tree is?“,
+however, upon further evaluation I believe this question to be
+distracted in scope. I wanted to narrow down the question in pursuit of
+finding the best places in Vancouver to view”Spectacle trees” in fall
+and spring respectively.*
 
-*4. What is the relationship between tree diameter and age of tree?*
-(This question used to be ” What is the relationship between species
+**4. What is the relationship between tree diameter and age of tree?**
+*(This question used to be ” What is the relationship between species
 diversity and longitude/latitude? Is there a specific species that
 dominates a certain area of vancouver or is the distribution fairly
 equal?“, however, upon further review this quesiton can be answered
 through my earlier inquiries so I wanted to gain more insight into
-growth patterns instead
+growth patterns instead*
 <!----------------------------------------------------------------------------->
 
 Here, we will investigate your data using various data manipulation and
@@ -181,9 +183,6 @@ for!
 
 <!------------------------- Start your work below ----------------------------->
 
-*What is the relationship between the age of the tree and the tree
-diameter?*
-
     # I am redefining my custom data set here because I had issues linking my first MDA file data set to this one. I hope this is okay :( 
 
     vancouver_trees$Year_Column <- format(vancouver_trees$date_planted, "%Y") 
@@ -214,11 +213,12 @@ diameter?*
     ## #   diameter <dbl>, curb <chr>, date_planted <date>, longitude <dbl>,
     ## #   latitude <dbl>, Year_Column <dbl>, tree_age <dbl>
 
-1.  Compute the *range*, *mean*, and *two other summary statistics* of
-    **one numerical variable** across the groups of **one categorical
-    variable** from your data.
+\##What is the relationship between the age of the tree and the tree
+diameter?
 
-<!-- -->
+**Compute the *range*, *mean*, and *two other summary statistics* of one
+numerical variable across the groups of one categorical variable from
+your data.**
 
     vancouver_trees_age%>%
       filter(!is.na(tree_age)) %>%
@@ -234,41 +234,33 @@ diameter?*
     ##            <dbl>            <dbl>           <dbl>       <dbl>
     ## 1             30             19.1              19        7.44
 
-1.  Create a graph that has at least two geom layers.
-
-<!-- -->
-
-    library(ggplot2)
+**8. Create a graph that has at least two geom layers.**
 
     filtered_data <- na.omit(vancouver_trees_age[, c("plant_area", "tree_age", "diameter")])
 
-    # Create a scatterplot with a logarithmic y-axis (tree age)
     ggplot(data = filtered_data, aes(x = plant_area, y = tree_age)) +
-      geom_point(aes(size = diameter), alpha = 0.5, color = "darkgreen") +  # Add tree diameter as the size of points
+      geom_point(aes(size = diameter), alpha = 0.5, color = "darkgreen") +  
       labs(
         title = "Relationship between Plant Area, Tree Age, and Diameter",
         x = "Plant Area",
         y = "Tree Age"
       ) +
       theme_minimal() +
-      theme(axis.text.x = element_text(angle = 90, vjust = 0.5))  # Rotate x-axis labels to be vertical
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5))  
 
 ![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
-*What is the distribution of different species of “Spectacle” trees
+\##What is the distribution of different species of “Spectacle” trees
 throughout Vancouver? (“Spectacle” trees is an subjective term that will
-be defined as species of that people visit as an attraction)*
+be defined as species of that people visit as an attraction)
 
-1.  Compute the number of observations for at least one of your
-    categorical variables. Do not use the function `table()`!
-
-<!-- -->
+**2. Compute the number of observations for at least one of your
+categorical variables. Do not use the function `table()`!**
 
     species_count <- vancouver_trees_age %>%
       group_by(species_name) %>%
       summarise(Count = n())
 
-    # Print the result
     print(species_count)
 
     ## # A tibble: 283 × 2
@@ -286,12 +278,8 @@ be defined as species of that people visit as an attraction)*
     ## 10 ALTISSIMA          4
     ## # ℹ 273 more rows
 
-1.  Make a graph where it makes sense to customize the alpha
-    transparency.
-
-<!-- -->
-
-    library(ggplot2)
+\*\* 7. Make a graph where it makes sense to customize the alpha
+transparency.\*\*
 
     filtered_data <- vancouver_trees_age %>%
       filter(genus_name %in% c("PRUNUS", "CORNUS", "ACER", "ABIES")) %>%
@@ -310,8 +298,8 @@ be defined as species of that people visit as an attraction)*
 
 ![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
-Supplementary calculation to find Maple genus. We find that “ACER” and
-“ABIES” are out two genus’ of interest.
+*Supplementary calculation to find Maple genus. We find that “ACER” and
+“ABIES” are out two genus’ of interest.*
 
     search_string <- 'maple'
 
@@ -426,23 +414,20 @@ Supplementary calculation to find Maple genus. We find that “ACER” and
     ## JADE GREEN NORWAY MAPLE               JADE GREEN NORWAY MAPLE       ACER
     ## EASY STREET NORWAY MAPLE             EASY STREET NORWAY MAPLE       ACER
 
-*Which neighbourhood in Vancouver contain the most amounts of “Spectacle
-trees”?*
+\##Which neighbourhood in Vancouver contain the most amounts of
+“Spectacle trees”?
 
-1.  Compute the number of observations for at least one of your
-    categorical variables. Do not use the function `table()`!
-
-<!-- -->
+**2.Compute the number of observations for at least one of your
+categorical variables. Do not use the function `table()`!**
 
     library(dplyr)
 
     spectacle_trees <- c("PRUNUS", "CORNUS", "ACER", "ABIES")
 
-    # Assuming 'vancouver_trees_age' is your dataset
     tree_counts_by_genus_and_neighbourhood <- vancouver_trees_age %>%
-      filter(genus_name %in% spectacle_trees) %>%  # Filter by selected genera
-      group_by(neighbourhood_name, genus_name) %>%      # Group by street and genus
-      summarize(tree_count = n()) %>%            # Count the number of trees in each group
+      filter(genus_name %in% spectacle_trees) %>%  
+      group_by(neighbourhood_name, genus_name) %>%      
+      summarize(tree_count = n()) %>%          
       ungroup()
 
     ## `summarise()` has grouped output by 'neighbourhood_name'. You can override
@@ -465,9 +450,7 @@ trees”?*
     ## 10 DUNBAR-SOUTHLANDS  ACER             2464
     ## # ℹ 78 more rows
 
-1.  Create a graph that has at least two geom layers.
-
-<!-- -->
+**8. Create a graph that has at least two geom layers.**
 
     #First I need to create a new function that tallies the amount of trees in each neighborhood
 
@@ -491,7 +474,6 @@ trees”?*
     ## 10 KITSILANO                       8115
     ## # ℹ 12 more rows
 
-    # Create the bar plot with total trees on a log scale
     plot <- ggplot(data = neighborhood_counts, aes(x = reorder(neighbourhood_name, -Total_Trees), y = Total_Trees)) +
       geom_bar(stat = "identity", fill = "darkgreen") +
       labs(
@@ -502,26 +484,22 @@ trees”?*
       theme_minimal() +
       theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
       coord_flip() +
-      scale_y_log10()  # Apply log scale to the y-axis
+      scale_y_log10()  
 
-    # Calculate the average tree age for each neighborhood
     average_age <- filtered_data %>%
       group_by(neighbourhood_name) %>%
       summarise(Average_Age = mean(tree_age, na.rm = TRUE))
 
-    # Add a line plot layer for the average tree age
     plot + geom_line(data = average_age, aes(x = reorder(neighbourhood_name, -Average_Age), y = Average_Age, group = 1), color = "red") +
       labs(y = "Total Trees / Average Age (x10)")
 
 ![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-11-1.png)
 
-*What is the relationship between tree diameter and age of tree?*
+\##What is the relationship between tree diameter and age of tree?
 
-1.  Create a categorical variable with 3 or more groups from an existing
-    numerical variable. You can use this new variable in the other
-    tasks! *An example: age in years into “child, teen, adult, senior”.*
-
-<!-- -->
+**3.Create a categorical variable with 3 or more groups from an existing
+numerical variable. You can use this new variable in the other tasks! An
+example: age in years into “child, teen, adult, senior”.**
 
     vancouver_trees_age$Diameter_string <- cut(vancouver_trees_age$diameter, 
                                                    breaks = c(-Inf, 10, 20, 30, Inf), 
@@ -535,17 +513,11 @@ trees”?*
     ##  [6] xsmall_width small_width  small_width  small_width  xsmall_width
     ## Levels: xsmall_width small_width medium_width large_width
 
-1.  Make a graph where it makes sense to customize the alpha
-    transparency.
+**7. Make a graph where it makes sense to customize the alpha
+transparency.**
 
-<!-- -->
-
-    library(ggplot2)
-
-    # Filter out rows with missing values in tree_age and diameter
     filtered_data <- na.omit(vancouver_trees_age[, c("tree_age", "diameter", "Diameter_string")])
 
-    # Create a scatterplot with custom colors and alpha transparency
     ggplot(data = filtered_data, aes(x = tree_age, y = diameter, color = Diameter_string)) +
       geom_point(aes(alpha = 0), size = 3) +
       labs(
@@ -554,7 +526,7 @@ trees”?*
         y = "Tree Diameter"
       ) +
       scale_color_manual(values = c("xsmall_width" = "red", "small_width" = "blue", "medium_width" = "green", "large_width" = "purple")) +
-      scale_alpha(range = c(0.1, 1.0))  # Adjust the alpha range as needed
+      scale_alpha(range = c(0.1, 1.0))
 
 ![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-13-1.png)
 
@@ -570,8 +542,8 @@ research questions are yielding interesting results?
 
 <!------------------------- Write your answer here ---------------------------->
 
-*1. What is the relationship between the age of the tree and plant
-area?*
+**1. What is the relationship between the age of the tree and plant
+area?**
 
 With the graph associated with this question, I am much closer to answer
 the research question. I think to clarify the data further, I may need
@@ -581,9 +553,9 @@ needed a second geom layer showing diameter of trees to answer this
 specific question, but it gives greater context regarding my question 4
 below.
 
-*2. What is the distribution of different species of “Spectacle” trees
+**2. What is the distribution of different species of “Spectacle” trees
 throughout Vancouver? (“Spectacle” trees is an subjective term that will
-be defined as species of that people visit as an attraction)*
+be defined as species of that people visit as an attraction)**
 
 Firstly, it was helpful to define the specific genus of trees that are
 defined as “spectacle trees”. Being able to graph them based on
@@ -594,8 +566,8 @@ regarding the distribution of these trees. I believe this research
 question was answered to the fullest extend and exceeded my own
 expectations in terms of results.
 
-*3. Which neighbourhood in Vancouver contain the most amounts of
-“Spectacle trees”?*
+**3. Which neighbourhood in Vancouver contain the most amounts of
+“Spectacle trees”?**
 
 With the previously defined “spectacle trees” filter, it was a lot
 easier for me to graph the total amount of spectacle trees per
@@ -604,7 +576,7 @@ Dunbar-Southlands to contain the most amount of spectacle trees overall,
 I may try to insert a stacked bar chart in the future to visualize the
 distribution of genus amonst the existing tally of spectacle trees.
 
-*4. What is the relationship between tree diameter and age of tree?*
+**4. What is the relationship between tree diameter and age of tree?**
 
 This relationship was a lot easier to find as the two numerical metrics
 were already predefined in my reformatted dataset. A curious finding for
@@ -634,18 +606,18 @@ just pick 8, and explain whether the data is untidy or tidy.
 
 <!--------------------------- Start your work below --------------------------->
 
-To answer this question, I will be analyzing whether my
+**To answer this question, I will be analyzing whether my
 vancouver\_trees\_age dataset is clean or not. I will be showing data
 below from the first 8 columns.For the most part, the data is tidy as it
 follows the aforementioned three statements defining tidy data. Each
 column highlights a specific variable and does not additionally expand
 any column values. During the data cleaning process, I did not choose to
-ommit outliers that had missing values within a row. Specifically,
+omit outliers that had missing values within a row. Specifically,
 “cultivar\_name” column within the first 8 columns includes some NA
 values. I chose not to remove these rows because “cultivar\_name” was
 not a column of data I was using in my analysis. Since the rest of the
 observations were complete, I decided that I could still include them in
-the dataset.
+the dataset.**
 
     #Demonstration of first 8 columns
 
@@ -691,7 +663,6 @@ and “after”.
       values_from = assigned
     )
 
-    # Print the resulting dataset
     print(wide_data)
 
     ## # A tibble: 146,611 × 24
@@ -720,7 +691,6 @@ and “after”.
       mutate(assigned = coalesce(N, Y)) %>%
       select(-N, -Y)
 
-    # Print the resulting dataset
     print(wide_data)
 
     ## # A tibble: 146,611 × 23
@@ -754,10 +724,10 @@ analysis in the remaining tasks:
 
 <!-------------------------- Start your work below ---------------------------->
 
-1.  *Which neighbourhood in Vancouver contain the most amounts of
-    “Spectacle trees”?*
+1.  **Which neighbourhood in Vancouver contain the most amounts of
+    “Spectacle trees”?**
 
-2.  *What is the relationship between tree diameter and age of tree?*
+2.  **What is the relationship between tree diameter and age of tree?**
 
 <!----------------------------------------------------------------------------->
 
@@ -765,12 +735,12 @@ Explain your decision for choosing the above two research questions.
 
 <!--------------------------- Start your work below --------------------------->
 
-*For question 1:* I want to further explore the genus of spectacle trees
-in each neighbourhood. This can be done by aggregating a count of the
-trees of each genus in each neighbourhood, allowing me to superimpose
-the data on top of each other in a stacked bar chart.
+**For question 1:** I want to further explore the genus of spectacle
+trees in each neighbourhood. This can be done by aggregating a count of
+the trees of each genus in each neighbourhood, allowing me to
+superimpose the data on top of each other in a stacked bar chart.
 
-*For question 2:*Now that I can create a scatter plot for these two
+**For question 2:**Now that I can create a scatter plot for these two
 variables, I would like to add a linear model to see if I can
 extrapolate any trends for specific species types .
 
@@ -796,10 +766,10 @@ these.
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Research Question**: *What is the relationship between tree diameter
-and age of tree?*
+**Research Question**: **What is the relationship between tree diameter
+and age of tree?**
 
-**Variable of interest**: diameter
+**Variable of interest**: *diameter*
 
 <!----------------------------------------------------------------------------->
 
@@ -827,33 +797,8 @@ specifics in STAT 545.
 
 <!-------------------------- Start your work below ---------------------------->
 
-    print(head(vancouver_trees_age))
-
-    ## # A tibble: 6 × 23
-    ##   tree_id civic_number std_street genus_name species_name cultivar_name  
-    ##     <dbl>        <dbl> <chr>      <chr>      <chr>        <chr>          
-    ## 1  149556          494 W 58TH AV  ULMUS      AMERICANA    BRANDON        
-    ## 2  149563          450 W 58TH AV  ZELKOVA    SERRATA      <NA>           
-    ## 3  149579         4994 WINDSOR ST STYRAX     JAPONICA     <NA>           
-    ## 4  149590          858 E 39TH AV  FRAXINUS   AMERICANA    AUTUMN APPLAUSE
-    ## 5  149604         5032 WINDSOR ST ACER       CAMPESTRE    <NA>           
-    ## 6  149616          585 W 61ST AV  PYRUS      CALLERYANA   CHANTICLEER    
-    ## # ℹ 17 more variables: common_name <chr>, assigned <chr>, root_barrier <chr>,
-    ## #   plant_area <chr>, on_street_block <dbl>, on_street <chr>,
-    ## #   neighbourhood_name <chr>, street_side_name <chr>, height_range_id <dbl>,
-    ## #   diameter <dbl>, curb <chr>, date_planted <date>, longitude <dbl>,
-    ## #   latitude <dbl>, Year_Column <dbl>, tree_age <dbl>, Diameter_string <fct>
-
-    # Load the ggplot2 package
-    library(ggplot2)
-
-    # Assuming your data frame is named "wide_data"
-    # Filter the data for the "Japanese Snowbell" in the "Common_name" column
     filtered_data <- vancouver_trees_age[vancouver_trees_age$common_name == "JAPANESE SNOWBELL", ]
 
-    # Remove rows with missing values in tree_age or diameter
-
-    # Create a scatter plot with tree age on the x-axis and diameter on the y-axis
     scatter_plot <- ggplot(data = filtered_data, aes(x = tree_age, y = diameter)) +
       geom_point() +
       labs(
@@ -861,11 +806,10 @@ specifics in STAT 545.
         x = "Tree Age",
         y = "Diameter"
       ) +
-      geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add a linear model line
-      scale_x_log10() +  # Add log scale to x-axis
-      scale_y_log10()    # Add log scale to y-axis
+      geom_smooth(method = "lm", se = FALSE, color = "blue") +  
+      scale_x_log10() +  
+      scale_y_log10()    
 
-    # Print the scatter plot
     print(scatter_plot)
 
     ## Warning: Transformation introduced infinite values in continuous y-axis
@@ -877,7 +821,7 @@ specifics in STAT 545.
 
     ## Warning: Removed 228 rows containing missing values (`geom_point()`).
 
-![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-18-1.png)
+![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-17-1.png)
 
 <!----------------------------------------------------------------------------->
 
@@ -897,25 +841,20 @@ Y, or a single value like a regression coefficient or a p-value.
 
 <!-------------------------- Start your work below ---------------------------->
 
-I am looking to find multiple regression coefficients such as the
+**I am looking to find multiple regression coefficients such as the
 estimated coefficients for the linear regression model, the standard
 error, the statistic and the p.value. I am hoping by gathering these 4
 metrics that I will get a better understanding of the relationship
-between tree age and tree diameter.
+between tree age and tree diameter.**
 
-    # Load the necessary packages
-    library(ggplot2)
     library(broom)
 
     filtered_data <- vancouver_trees_age[vancouver_trees_age$common_name == "JAPANESE SNOWBELL", ]
 
-    # Fit a linear model to the data
     lm_model <- lm(diameter ~ tree_age, data = filtered_data)
 
-    # Extract the regression coefficients using broom
     coefficients_df <- tidy(lm_model)
 
-    # Print the coefficients
     print(coefficients_df)
 
     ## # A tibble: 2 × 5
@@ -946,12 +885,10 @@ file in your `output` folder. Use the `here::here()` function.
 
 <!-------------------------- Start your work below ---------------------------->
 
-First I will create a new “output” folder for my work.
+**First I will create a new “output” folder for my work.**
 
-    # Define the folder name
     output_folder <- "output"
 
-    # Check if the folder already exists; if not, create it
     if (!dir.exists(output_folder)) {
       dir.create(output_folder)
     } else {
@@ -960,32 +897,26 @@ First I will create a new “output” folder for my work.
 
     ## The folder output already exists.
 
-    # Set the working directory to the "output" folder
     setwd(output_folder)
 
-I have selected to use the following research question for this
-assignment: *What is the distribution of different species of
-“Spectacle” trees throughout Vancouver? (“Spectacle” trees is an
-subjective term that will be defined as species of that people visit as
-an attraction)*
+**I have selected to use the following research question and summary
+table for this assignment:**
 
-1.  Compute the number of observations for at least one of your
-    categorical variables. Do not use the function `table()`!
+*What is the distribution of different species of “Spectacle” trees
+throughout Vancouver? (“Spectacle” trees is an subjective term that will
+be defined as species of that people visit as an attraction)*
 
-<!-- -->
+*2. Compute the number of observations for at least one of your
+categorical variables. Do not use the function `table()`!*
 
-    # Summarize the data
     species_count <- vancouver_trees_age %>%
       group_by(species_name) %>%
       summarise(Count = n())
 
-    # Specify the output file path using here::here()
     output_file <- here::here("output", "species_summary.csv")
 
-    # Save the summary table as a CSV file
     write.csv(species_count, output_file, row.names = FALSE)
 
-    # Confirm the file has been created
     cat("CSV file saved:", output_file, "\n")
 
     ## CSV file saved: C:/Users/andre/Documents/mda-Andyrooooo16/output/species_summary.csv
@@ -1003,18 +934,10 @@ Use the functions `saveRDS()` and `readRDS()`.
 
 <!-------------------------- Start your work below ---------------------------->
 
-For reference, here is the code again for my model in Task 3:
+**For reference, here is the code again for my model in Task 3:**
 
-    # Load the ggplot2 package
-    library(ggplot2)
-
-    # Assuming your data frame is named "wide_data"
-    # Filter the data for the "Japanese Snowbell" in the "Common_name" column
     filtered_data <- vancouver_trees_age[vancouver_trees_age$common_name == "JAPANESE SNOWBELL", ]
 
-    # Remove rows with missing values in tree_age or diameter
-
-    # Create a scatter plot with tree age on the x-axis and diameter on the y-axis
     scatter_plot <- ggplot(data = filtered_data, aes(x = tree_age, y = diameter)) +
       geom_point() +
       labs(
@@ -1022,11 +945,10 @@ For reference, here is the code again for my model in Task 3:
         x = "Tree Age",
         y = "Diameter"
       ) +
-      geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add a linear model line
-      scale_x_log10() +  # Add log scale to x-axis
-      scale_y_log10()    # Add log scale to y-axis
+      geom_smooth(method = "lm", se = FALSE, color = "blue") +  
+      scale_x_log10() +  
+      scale_y_log10()    
 
-    # Print the scatter plot
     print(scatter_plot)
 
     ## Warning: Transformation introduced infinite values in continuous y-axis
@@ -1038,20 +960,12 @@ For reference, here is the code again for my model in Task 3:
 
     ## Warning: Removed 228 rows containing missing values (`geom_point()`).
 
-![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-22-1.png)
+![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-21-1.png)
 
-    # Your code to create the model object
-    # ...
-
-    # Save the model object to an RDS file
     model_regression <- here::here("output", "your_model.rds")
     saveRDS(scatter_plot, file = model_regression)
 
-    # Load the model object from the RDS file
     loaded_model <- readRDS(model_regression)
-
-    # You can now use the loaded_model object
-    # ...
 
 <!----------------------------------------------------------------------------->
 
