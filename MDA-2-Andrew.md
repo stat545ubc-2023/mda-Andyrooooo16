@@ -213,21 +213,23 @@ for!
     ## #   diameter <dbl>, curb <chr>, date_planted <date>, longitude <dbl>,
     ## #   latitude <dbl>, Year_Column <dbl>, tree_age <dbl>
 
-\##What is the relationship between the age of the tree and the tree
-diameter?
+### What is the relationship between the age of the tree and the tree diameter?
 
 **Compute the *range*, *mean*, and *two other summary statistics* of one
 numerical variable across the groups of one categorical variable from
 your data.**
 
-    vancouver_trees_age%>%
+    tree_age_stats <- vancouver_trees_age %>%
       filter(!is.na(tree_age)) %>%
       summarize(
         range_tree_age = max(tree_age) - min(tree_age),
         average_tree_age = mean(tree_age), 
         median_tree_age = median(tree_age), 
         sd_tree_age = sd(tree_age)
-        )
+      )
+
+    # Print the summary statistics
+    print(tree_age_stats)
 
     ## # A tibble: 1 × 4
     ##   range_tree_age average_tree_age median_tree_age sd_tree_age
@@ -250,11 +252,9 @@ your data.**
 
 ![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
-\##What is the distribution of different species of “Spectacle” trees
-throughout Vancouver? (“Spectacle” trees is an subjective term that will
-be defined as species of that people visit as an attraction)
+### What is the distribution of different species of “Spectacle” trees throughout Vancouver? (“Spectacle” trees is an subjective term that will be defined as species of that people visit as an attraction)
 
-**2. Compute the number of observations for at least one of your
+**2.Compute the number of observations for at least one of your
 categorical variables. Do not use the function `table()`!**
 
     species_count <- vancouver_trees_age %>%
@@ -278,8 +278,8 @@ categorical variables. Do not use the function `table()`!**
     ## 10 ALTISSIMA          4
     ## # ℹ 273 more rows
 
-\*\* 7. Make a graph where it makes sense to customize the alpha
-transparency.\*\*
+**7. Make a graph where it makes sense to customize the alpha
+transparency.**
 
     filtered_data <- vancouver_trees_age %>%
       filter(genus_name %in% c("PRUNUS", "CORNUS", "ACER", "ABIES")) %>%
@@ -414,13 +414,10 @@ transparency.\*\*
     ## JADE GREEN NORWAY MAPLE               JADE GREEN NORWAY MAPLE       ACER
     ## EASY STREET NORWAY MAPLE             EASY STREET NORWAY MAPLE       ACER
 
-\##Which neighbourhood in Vancouver contain the most amounts of
-“Spectacle trees”?
+### Which neighbourhood in Vancouver contain the most amounts of “Spectacle trees”?
 
 **2.Compute the number of observations for at least one of your
 categorical variables. Do not use the function `table()`!**
-
-    library(dplyr)
 
     spectacle_trees <- c("PRUNUS", "CORNUS", "ACER", "ABIES")
 
@@ -495,23 +492,24 @@ categorical variables. Do not use the function `table()`!**
 
 ![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-11-1.png)
 
-\##What is the relationship between tree diameter and age of tree?
+### What is the relationship between tree diameter and age of tree?
 
 **3.Create a categorical variable with 3 or more groups from an existing
 numerical variable. You can use this new variable in the other tasks! An
 example: age in years into “child, teen, adult, senior”.**
 
-    vancouver_trees_age$Diameter_string <- cut(vancouver_trees_age$diameter, 
-                                                   breaks = c(-Inf, 10, 20, 30, Inf), 
-                                                   labels = c("xsmall_width", "small_width", "medium_width", "large_width"),
-                                                   include.lowest = TRUE)
-
+    vancouver_trees_age <- vancouver_trees_age %>%
+      mutate(Diameter_string = case_when(
+        diameter <= 10 ~ "xsmall_width",
+        diameter <= 20 ~ "small_width",
+        diameter <= 30 ~ "medium_width",
+        TRUE ~ "large_width"
+      ))
 
     print(head(vancouver_trees_age$Diameter_string, 10))
 
-    ##  [1] xsmall_width xsmall_width xsmall_width small_width  xsmall_width
-    ##  [6] xsmall_width small_width  small_width  small_width  xsmall_width
-    ## Levels: xsmall_width small_width medium_width large_width
+    ##  [1] "xsmall_width" "xsmall_width" "xsmall_width" "small_width"  "xsmall_width"
+    ##  [6] "xsmall_width" "small_width"  "small_width"  "small_width"  "xsmall_width"
 
 **7. Make a graph where it makes sense to customize the alpha
 transparency.**
@@ -608,16 +606,18 @@ just pick 8, and explain whether the data is untidy or tidy.
 
 **To answer this question, I will be analyzing whether my
 vancouver\_trees\_age dataset is clean or not. I will be showing data
-below from the first 8 columns.For the most part, the data is tidy as it
-follows the aforementioned three statements defining tidy data. Each
-column highlights a specific variable and does not additionally expand
-any column values. During the data cleaning process, I did not choose to
-omit outliers that had missing values within a row. Specifically,
+below from the first 8 columns since my data set has 24 columns.For the
+most part, the data is tidy as it satisfies the aforementioned three
+statements defining tidy data. Each column highlights a specific
+variable and does not additionally expand any column values. However,
+during the data cleaning process, I made a stylistic choice to not omit
+outliers that had missing values within a row. Specifically,
 “cultivar\_name” column within the first 8 columns includes some NA
-values. I chose not to remove these rows because “cultivar\_name” was
-not a column of data I was using in my analysis. Since the rest of the
-observations were complete, I decided that I could still include them in
-the dataset.**
+values. I chose not to remove these rows because “cultivar\_name” and
+the other columns with missing data were not columns I was using in my
+analysis. Since the rest of the observations were complete from the rows
+containing the missing values, I decided that I could still include them
+in the dataset.**
 
     #Demonstration of first 8 columns
 
@@ -655,7 +655,7 @@ and “after”.
 
 <!--------------------------- Start your work below --------------------------->
 
-    #Since I previously categorized my data as tidy, I will first untidy the data by expanding the column "assigned".
+    #Since I previously categorized my data as tidy in Task 2.1, I will first untidy the data by expanding the column "assigned". The table under Task 2.1 shows the original "before" view. The output table from this function is the "after" view. 
 
     wide_data <- pivot_wider(
       data = vancouver_trees_age,
@@ -683,9 +683,9 @@ and “after”.
     ## #   on_street_block <dbl>, on_street <chr>, neighbourhood_name <chr>,
     ## #   street_side_name <chr>, height_range_id <dbl>, diameter <dbl>, curb <chr>,
     ## #   date_planted <date>, longitude <dbl>, latitude <dbl>, Year_Column <dbl>,
-    ## #   tree_age <dbl>, Diameter_string <fct>, N <chr>, Y <chr>
+    ## #   tree_age <dbl>, Diameter_string <chr>, N <chr>, Y <chr>
 
-    # The following formula makes my dataset tidy again
+    # The following formula makes my table tidy again. The output looks slightly different from the "before" table from Task 2.1, but that is because the "tree_id" sorting is different. The values from each row of this restpred table remain the same as the "before" table from Task 2.1. 
 
     wide_data <- wide_data %>%
       mutate(assigned = coalesce(N, Y)) %>%
@@ -711,7 +711,7 @@ and “after”.
     ## #   on_street_block <dbl>, on_street <chr>, neighbourhood_name <chr>,
     ## #   street_side_name <chr>, height_range_id <dbl>, diameter <dbl>, curb <chr>,
     ## #   date_planted <date>, longitude <dbl>, latitude <dbl>, Year_Column <dbl>,
-    ## #   tree_age <dbl>, Diameter_string <fct>, assigned <chr>
+    ## #   tree_age <dbl>, Diameter_string <chr>, assigned <chr>
 
 <!----------------------------------------------------------------------------->
 
@@ -756,6 +756,36 @@ data, one for each research question.)
 
 <!--------------------------- Start your work below --------------------------->
 
+    # I am going to create a new version of my vancouver_trees_age dataset for Task 3
+
+    vancouver_trees_age2 <- vancouver_trees_age %>%
+      select(
+        genus_name, species_name, cultivar_name, common_name, assigned,
+        plant_area, neighbourhood_name, diameter, date_planted,
+        longitude, latitude, Year_Column, tree_age, Diameter_string)
+
+    print(vancouver_trees_age2)
+
+    ## # A tibble: 146,611 × 14
+    ##    genus_name species_name cultivar_name   common_name       assigned plant_area
+    ##    <chr>      <chr>        <chr>           <chr>             <chr>    <chr>     
+    ##  1 ULMUS      AMERICANA    BRANDON         BRANDON ELM       N        N         
+    ##  2 ZELKOVA    SERRATA      <NA>            JAPANESE ZELKOVA  N        N         
+    ##  3 STYRAX     JAPONICA     <NA>            JAPANESE SNOWBELL N        4         
+    ##  4 FRAXINUS   AMERICANA    AUTUMN APPLAUSE AUTUMN APPLAUSE … Y        4         
+    ##  5 ACER       CAMPESTRE    <NA>            HEDGE MAPLE       N        4         
+    ##  6 PYRUS      CALLERYANA   CHANTICLEER     CHANTICLEER PEAR  N        B         
+    ##  7 ACER       PLATANOIDES  COLUMNARE       COLUMNAR NORWAY … N        6         
+    ##  8 ACER       PLATANOIDES  COLUMNARE       COLUMNAR NORWAY … N        6         
+    ##  9 ACER       PLATANOIDES  COLUMNARE       COLUMNAR NORWAY … N        3         
+    ## 10 FRAXINUS   AMERICANA    AUTUMN APPLAUSE AUTUMN APPLAUSE … N        3         
+    ## # ℹ 146,601 more rows
+    ## # ℹ 8 more variables: neighbourhood_name <chr>, diameter <dbl>,
+    ## #   date_planted <date>, longitude <dbl>, latitude <dbl>, Year_Column <dbl>,
+    ## #   tree_age <dbl>, Diameter_string <chr>
+
+<!----------------------------------------------------------------------------->
+
 # Task 3: Modelling
 
 ## 3.0 (no points)
@@ -797,7 +827,7 @@ specifics in STAT 545.
 
 <!-------------------------- Start your work below ---------------------------->
 
-    filtered_data <- vancouver_trees_age[vancouver_trees_age$common_name == "JAPANESE SNOWBELL", ]
+    filtered_data <- vancouver_trees_age2[vancouver_trees_age2$common_name == "JAPANESE SNOWBELL", ]
 
     scatter_plot <- ggplot(data = filtered_data, aes(x = tree_age, y = diameter)) +
       geom_point() +
@@ -821,7 +851,7 @@ specifics in STAT 545.
 
     ## Warning: Removed 228 rows containing missing values (`geom_point()`).
 
-![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-17-1.png)
+![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-18-1.png)
 
 <!----------------------------------------------------------------------------->
 
@@ -847,9 +877,7 @@ error, the statistic and the p.value. I am hoping by gathering these 4
 metrics that I will get a better understanding of the relationship
 between tree age and tree diameter.**
 
-    library(broom)
-
-    filtered_data <- vancouver_trees_age[vancouver_trees_age$common_name == "JAPANESE SNOWBELL", ]
+    filtered_data <- vancouver_trees_age2[vancouver_trees_age2$common_name == "JAPANESE SNOWBELL", ]
 
     lm_model <- lm(diameter ~ tree_age, data = filtered_data)
 
@@ -909,6 +937,7 @@ be defined as species of that people visit as an attraction)*
 *2. Compute the number of observations for at least one of your
 categorical variables. Do not use the function `table()`!*
 
+    # I have tested robustness and reproducibility manually by dragging and dropping my files to different locations and by deleting and rerunning my code.
     species_count <- vancouver_trees_age %>%
       group_by(species_name) %>%
       summarise(Count = n())
@@ -936,6 +965,8 @@ Use the functions `saveRDS()` and `readRDS()`.
 
 **For reference, here is the code again for my model in Task 3:**
 
+    # I have tested robustness and reproducibility manually by dragging and dropping my files to different locations and by deleting and rerunning my code.
+
     filtered_data <- vancouver_trees_age[vancouver_trees_age$common_name == "JAPANESE SNOWBELL", ]
 
     scatter_plot <- ggplot(data = filtered_data, aes(x = tree_age, y = diameter)) +
@@ -960,7 +991,7 @@ Use the functions `saveRDS()` and `readRDS()`.
 
     ## Warning: Removed 228 rows containing missing values (`geom_point()`).
 
-![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-21-1.png)
+![](MDA-2-Andrew_files/figure-markdown_strict/unnamed-chunk-22-1.png)
 
     model_regression <- here::here("output", "your_model.rds")
     saveRDS(scatter_plot, file = model_regression)

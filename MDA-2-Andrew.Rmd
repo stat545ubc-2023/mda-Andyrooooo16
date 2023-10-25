@@ -127,20 +127,25 @@ vancouver_trees_age <- vancouver_trees %>%
 print(vancouver_trees_age)
 
 ```
-##What is the relationship between the age of the tree and the tree diameter?
+### What is the relationship between the age of the tree and the tree diameter?
 
 **Compute the *range*, *mean*, and *two other summary statistics* of one numerical variable across the groups of one categorical variable from your data.**
 
 ```{r}
 
-vancouver_trees_age%>%
+
+tree_age_stats <- vancouver_trees_age %>%
   filter(!is.na(tree_age)) %>%
   summarize(
     range_tree_age = max(tree_age) - min(tree_age),
     average_tree_age = mean(tree_age), 
     median_tree_age = median(tree_age), 
     sd_tree_age = sd(tree_age)
-    )
+  )
+
+# Print the summary statistics
+print(tree_age_stats)
+
 
 ```
 **8. Create a graph that has at least two geom layers.**
@@ -162,10 +167,10 @@ ggplot(data = filtered_data, aes(x = plant_area, y = tree_age)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5))  
 ```
 
-##What is the distribution of different species of “Spectacle” trees throughout Vancouver? (“Spectacle” trees is an subjective term that will be defined as species of that people visit as an attraction)
+### What is the distribution of different species of “Spectacle” trees throughout Vancouver? (“Spectacle” trees is an subjective term that will be defined as species of that people visit as an attraction)
 
 
-**2. Compute the number of observations for at least one of your categorical variables. Do not use the function `table()`!**
+**2.Compute the number of observations for at least one of your categorical variables. Do not use the function `table()`!**
 
 ```{r}
 
@@ -176,7 +181,7 @@ species_count <- vancouver_trees_age %>%
 print(species_count)
 
 ```
-** 7. Make a graph where it makes sense to customize the alpha transparency.**
+**7. Make a graph where it makes sense to customize the alpha transparency.**
 
 ```{r}
 
@@ -216,13 +221,11 @@ result_trees <- data.frame(common_name = names(associated_values_list), genus_na
 print(result_trees)
 ```
 
-##Which neighbourhood in Vancouver contain the most amounts of "Spectacle trees"?
+### Which neighbourhood in Vancouver contain the most amounts of "Spectacle trees"?
 
 **2.Compute the number of observations for at least one of your categorical variables. Do not use the function `table()`!**
 
 ```{r}
-
-library(dplyr)
 
 spectacle_trees <- c("PRUNUS", "CORNUS", "ACER", "ABIES")
 
@@ -270,22 +273,21 @@ plot + geom_line(data = average_age, aes(x = reorder(neighbourhood_name, -Averag
 
 ```
 
-##What is the relationship between tree diameter and age of tree?
+### What is the relationship between tree diameter and age of tree?
 
 **3.Create a categorical variable with 3 or more groups from an existing numerical variable. You can use this new variable in the other tasks! An example: age in years into "child, teen, adult, senior".**
 
 ```{r}
 
-
-vancouver_trees_age$Diameter_string <- cut(vancouver_trees_age$diameter, 
-                                               breaks = c(-Inf, 10, 20, 30, Inf), 
-                                               labels = c("xsmall_width", "small_width", "medium_width", "large_width"),
-                                               include.lowest = TRUE)
-
+vancouver_trees_age <- vancouver_trees_age %>%
+  mutate(Diameter_string = case_when(
+    diameter <= 10 ~ "xsmall_width",
+    diameter <= 20 ~ "small_width",
+    diameter <= 30 ~ "medium_width",
+    TRUE ~ "large_width"
+  ))
 
 print(head(vancouver_trees_age$Diameter_string, 10))
-
-
 
 ```
 
@@ -355,7 +357,7 @@ Based on the definition above, can you identify if your data is tidy or untidy? 
 
 <!--------------------------- Start your work below --------------------------->
 
-**To answer this question, I will be analyzing whether my vancouver_trees_age dataset is clean or not. I will be showing data below from the first 8 columns.For the most part, the data is tidy as it follows the aforementioned three statements defining tidy data. Each column highlights a specific variable and does not additionally expand any column values. During the data cleaning process, I did not choose to omit outliers that had missing values within a row. Specifically, "cultivar_name" column within the first 8 columns includes some NA values. I chose not to remove these rows because "cultivar_name" was not a column of data I was using in my analysis. Since the rest of the observations were complete, I decided that I could still include them in the dataset.**
+**To answer this question, I will be analyzing whether my vancouver_trees_age dataset is clean or not. I will be showing data below from the first 8 columns since my data set has 24 columns.For the most part, the data is tidy as it satisfies the aforementioned three statements defining tidy data. Each column highlights a specific variable and does not additionally expand any column values. However, during the data cleaning process, I made a stylistic choice to not omit outliers that had missing values within a row. Specifically, "cultivar_name" column within the first 8 columns includes some NA values. I chose not to remove these rows because "cultivar_name" and the other columns with missing data were not columns I was using in my analysis. Since the rest of the observations were complete from the rows containing the missing values, I decided that I could still include them in the dataset.**
 
 ```{r}
 #Demonstration of first 8 columns
@@ -380,7 +382,7 @@ Be sure to explain your reasoning for this task. Show us the "before" and "after
 <!--------------------------- Start your work below --------------------------->
 
 ```{r}
-#Since I previously categorized my data as tidy, I will first untidy the data by expanding the column "assigned".
+#Since I previously categorized my data as tidy in Task 2.1, I will first untidy the data by expanding the column "assigned". The table under Task 2.1 shows the original "before" view. The output table from this function is the "after" view. 
 
 wide_data <- pivot_wider(
   data = vancouver_trees_age,
@@ -393,7 +395,7 @@ print(wide_data)
 
 ```{r}
 
-# The following formula makes my dataset tidy again
+# The following formula makes my table tidy again. The output looks slightly different from the "before" table from Task 2.1, but that is because the "tree_id" sorting is different. The values from each row of this restpred table remain the same as the "before" table from Task 2.1. 
 
 wide_data <- wide_data %>%
   mutate(assigned = coalesce(N, Y)) %>%
@@ -435,6 +437,25 @@ Now, try to choose a version of your data that you think will be appropriate to 
 
 <!--------------------------- Start your work below --------------------------->
 
+```{r}
+# I am going to create a new version of my vancouver_trees_age dataset for Task 3
+
+vancouver_trees_age2 <- vancouver_trees_age %>%
+  select(
+    genus_name, species_name, cultivar_name, common_name, assigned,
+    plant_area, neighbourhood_name, diameter, date_planted,
+    longitude, latitude, Year_Column, tree_age, Diameter_string)
+
+print(vancouver_trees_age2)
+  
+  
+
+```
+
+
+<!----------------------------------------------------------------------------->
+
+
 # Task 3: Modelling
 
 ## 3.0 (no points)
@@ -462,10 +483,9 @@ Fit a model or run a hypothesis test that provides insight on this variable with
 
 <!-------------------------- Start your work below ---------------------------->
 
-
 ```{r}
 
-filtered_data <- vancouver_trees_age[vancouver_trees_age$common_name == "JAPANESE SNOWBELL", ]
+filtered_data <- vancouver_trees_age2[vancouver_trees_age2$common_name == "JAPANESE SNOWBELL", ]
 
 scatter_plot <- ggplot(data = filtered_data, aes(x = tree_age, y = diameter)) +
   geom_point() +
@@ -502,9 +522,7 @@ Produce something relevant from your fitted model: either predictions on Y, or a
 
 ```{r}
 
-library(broom)
-
-filtered_data <- vancouver_trees_age[vancouver_trees_age$common_name == "JAPANESE SNOWBELL", ]
+filtered_data <- vancouver_trees_age2[vancouver_trees_age2$common_name == "JAPANESE SNOWBELL", ]
 
 lm_model <- lm(diameter ~ tree_age, data = filtered_data)
 
@@ -550,7 +568,7 @@ setwd(output_folder)
 *2.  Compute the number of observations for at least one of your categorical variables. Do not use the function `table()`!*
 
 ```{r}
-
+# I have tested robustness and reproducibility manually by dragging and dropping my files to different locations and by deleting and rerunning my code.
 species_count <- vancouver_trees_age %>%
   group_by(species_name) %>%
   summarise(Count = n())
@@ -577,6 +595,7 @@ Write your model object from Task 3 to an R binary file (an RDS), and load it ag
 
 **For reference, here is the code again for my model in Task 3:**
 ```{r}
+# I have tested robustness and reproducibility manually by dragging and dropping my files to different locations and by deleting and rerunning my code.
 
 filtered_data <- vancouver_trees_age[vancouver_trees_age$common_name == "JAPANESE SNOWBELL", ]
 
