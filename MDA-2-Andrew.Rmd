@@ -55,8 +55,8 @@ library(tidyverse)
 
 
 ```{r}
-
-library(datateachr) # <- might contain the data you picked!
+library(here)
+library(datateachr) 
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
@@ -148,25 +148,22 @@ vancouver_trees_age%>%
 ```
 8. Create a graph that has at least two geom layers. 
 
+
 ```{r}
-
-
 library(ggplot2)
-
 
 filtered_data <- na.omit(vancouver_trees_age[, c("plant_area", "tree_age", "diameter")])
 
 # Create a scatterplot with a logarithmic y-axis (tree age)
 ggplot(data = filtered_data, aes(x = plant_area, y = tree_age)) +
-  geom_point(aes(size = diameter), alpha = 0.5, color = "darkgreen") +  # Add tree diameter as size of points
+  geom_point(aes(size = diameter), alpha = 0.5, color = "darkgreen") +  # Add tree diameter as the size of points
   labs(
     title = "Relationship between Plant Area, Tree Age, and Diameter",
     x = "Plant Area",
     y = "Tree Age"
   ) +
-  theme_minimal()
-
-
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))  # Rotate x-axis labels to be vertical
 
 ```
 
@@ -247,6 +244,17 @@ print(tree_counts_by_genus_and_neighbourhood)
 ```
 
 8. Create a graph that has at least two geom layers. 
+
+
+```{r}
+#First I need to create a new function that tallies the amount of trees in each neighborhood
+
+neighborhood_counts <- vancouver_trees_age %>%
+  count(neighbourhood_name, name = "Total_Trees")
+
+print(neighborhood_counts)
+```
+
 
 ```{r}
 # Create the bar plot with total trees on a log scale
@@ -527,6 +535,25 @@ Produce something relevant from your fitted model: either predictions on Y, or a
 
 <!-------------------------- Start your work below ---------------------------->
 
+I am looking to find multiple regression coefficients such as the estimated coefficients for the linear regression model, the standard error, the statistic and the p.value. I am hoping by gathering these 4 metrics that I will get a better understanding of the relationship between tree age and tree diameter. 
+
+```{r}
+# Load the necessary packages
+library(ggplot2)
+library(broom)
+
+filtered_data <- vancouver_trees_age[vancouver_trees_age$common_name == "JAPANESE SNOWBELL", ]
+
+# Fit a linear model to the data
+lm_model <- lm(diameter ~ tree_age, data = filtered_data)
+
+# Extract the regression coefficients using broom
+coefficients_df <- tidy(lm_model)
+
+# Print the coefficients
+print(coefficients_df)
+
+```
 
 
 <!----------------------------------------------------------------------------->
@@ -544,6 +571,48 @@ Take a summary table that you made from Task 1, and write it as a csv file in yo
 
 <!-------------------------- Start your work below ---------------------------->
 
+First I will create a new "output" folder for my work. 
+```{r}
+# Define the folder name
+output_folder <- "output"
+
+# Check if the folder already exists; if not, create it
+if (!dir.exists(output_folder)) {
+  dir.create(output_folder)
+} else {
+  cat(paste("The folder", output_folder, "already exists.\n"))
+}
+
+# Set the working directory to the "output" folder
+setwd(output_folder)
+
+```
+I have selected to use the following research question for this assignment: 
+*What is the distribution of different species of “Spectacle” trees throughout Vancouver? (“Spectacle” trees is an subjective term that will be defined as species of that people visit as an attraction)*
+
+2.  Compute the number of observations for at least one of your categorical variables. Do not use the function `table()`!
+
+```{r}
+
+# Summarize the data
+species_count <- vancouver_trees_age %>%
+  group_by(species_name) %>%
+  summarise(Count = n())
+
+# Specify the output file path using here::here()
+output_file <- here::here("output", "species_summary.csv")
+
+# Save the summary table as a CSV file
+write.csv(species_count, output_file, row.names = FALSE)
+
+# Confirm the file has been created
+cat("CSV file saved:", output_file, "\n")
+
+
+```
+
+
+
 <!----------------------------------------------------------------------------->
 
 ## 4.2 (3 points)
@@ -553,6 +622,52 @@ Write your model object from Task 3 to an R binary file (an RDS), and load it ag
 -   The same robustness and reproducibility criteria as in 4.1 apply here.
 
 <!-------------------------- Start your work below ---------------------------->
+For reference, here is the code again for my model in Task 3: 
+```{r}
+
+# Load the ggplot2 package
+library(ggplot2)
+
+# Assuming your data frame is named "wide_data"
+# Filter the data for the "Japanese Snowbell" in the "Common_name" column
+filtered_data <- vancouver_trees_age[vancouver_trees_age$common_name == "JAPANESE SNOWBELL", ]
+
+# Remove rows with missing values in tree_age or diameter
+
+# Create a scatter plot with tree age on the x-axis and diameter on the y-axis
+scatter_plot <- ggplot(data = filtered_data, aes(x = tree_age, y = diameter)) +
+  geom_point() +
+  labs(
+    title = "Scatter Plot of Tree Age vs. Diameter for Japanese Snowbell",
+    x = "Tree Age",
+    y = "Diameter"
+  ) +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add a linear model line
+  scale_x_log10() +  # Add log scale to x-axis
+  scale_y_log10()    # Add log scale to y-axis
+
+# Print the scatter plot
+print(scatter_plot)
+
+
+```
+
+```{r}
+# Your code to create the model object
+# ...
+
+# Save the model object to an RDS file
+model_regression <- here::here("output", "your_model.rds")
+saveRDS(scatter_plot, file = model_regression)
+
+# Load the model object from the RDS file
+loaded_model <- readRDS(model_regression)
+
+# You can now use the loaded_model object
+# ...
+
+```
+
 
 <!----------------------------------------------------------------------------->
 
